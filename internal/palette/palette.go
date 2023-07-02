@@ -2,7 +2,7 @@ package palette
 
 import (
 	"os"
-	"term/internal/history"
+	"termium/internal/history"
 
 	"github.com/eiannone/keyboard"
 )

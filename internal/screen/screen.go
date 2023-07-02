@@ -2,9 +2,9 @@ package screen
 
 import (
 	"errors"
-	"term/internal/models/dimension"
-	"term/internal/palette"
-	"term/internal/utils"
+	"termium/internal/models/dimension"
+	"termium/internal/palette"
+	"termium/internal/utils"
 	"time"
 )
 

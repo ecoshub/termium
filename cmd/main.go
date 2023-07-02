@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"term/internal/models/dimension"
-	"term/internal/palette"
-	"term/internal/panel"
-	"term/internal/screen"
+	"termium/internal/models/dimension"
+	"termium/internal/palette"
+	"termium/internal/panel"
+	"termium/internal/screen"
 )
 
 func main() {

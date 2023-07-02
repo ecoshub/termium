@@ -3,8 +3,8 @@ package panel
 import (
 	"fmt"
 	"math/rand"
-	"term/internal/models/dimension"
-	"term/internal/utils"
+	"termium/internal/models/dimension"
+	"termium/internal/utils"
 	"time"
 )
 

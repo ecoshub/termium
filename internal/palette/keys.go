@@ -2,7 +2,7 @@ package palette
 
 import (
 	"os"
-	"term/internal/ansi"
+	"termium/internal/ansi"
 )
 
 const (

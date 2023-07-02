@@ -2,9 +2,9 @@ package screen
 
 import (
 	"strings"
-	"term/internal/ansi"
-	"term/internal/panel"
-	"term/internal/utils"
+	"termium/internal/ansi"
+	"termium/internal/panel"
+	"termium/internal/utils"
 	"time"
 )
 

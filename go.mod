@@ -1,4 +1,4 @@
-module term
+module termium
 
 go 1.20
 

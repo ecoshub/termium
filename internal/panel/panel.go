@@ -1,6 +1,6 @@
 package panel
 
-import "term/internal/models/dimension"
+import "termium/internal/models/dimension"
 
 type Panel interface {
 	GetSize() *dimension.Vector

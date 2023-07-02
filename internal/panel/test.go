@@ -2,7 +2,7 @@ package panel
 
 import (
 	"fmt"
-	"term/internal/utils"
+	"termium/internal/utils"
 	"time"
 )
 
