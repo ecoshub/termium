@@ -1,6 +1,6 @@
 package panel
 
-import "github.com/ecoshub/termium/internal/models/dimension"
+import "github.com/ecoshub/termium/models/dimension"
 
 type Panel interface {
 	GetSize() *dimension.Vector

@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/ecoshub/termium/internal/models/dimension"
-	"github.com/ecoshub/termium/internal/palette"
-	"github.com/ecoshub/termium/internal/panel"
-	"github.com/ecoshub/termium/internal/screen"
+	"github.com/ecoshub/termium/models/dimension"
+	"github.com/ecoshub/termium/palette"
+	"github.com/ecoshub/termium/panel"
+	"github.com/ecoshub/termium/screen"
 )
 
 func main() {

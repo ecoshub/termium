@@ -3,7 +3,7 @@ package palette
 import (
 	"os"
 
-	"github.com/ecoshub/termium/internal/history"
+	"github.com/ecoshub/termium/history"
 	"github.com/eiannone/keyboard"
 )
 

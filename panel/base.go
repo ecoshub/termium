@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ecoshub/termium/internal/models/dimension"
-	"github.com/ecoshub/termium/internal/utils"
+	"github.com/ecoshub/termium/models/dimension"
+	"github.com/ecoshub/termium/utils"
 )
 
 type BasePanel struct {

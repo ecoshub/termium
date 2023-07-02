@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ecoshub/termium/internal/models/dimension"
-	"github.com/ecoshub/termium/internal/palette"
-	"github.com/ecoshub/termium/internal/utils"
+	"github.com/ecoshub/termium/models/dimension"
+	"github.com/ecoshub/termium/palette"
+	"github.com/ecoshub/termium/utils"
 )
 
 const (

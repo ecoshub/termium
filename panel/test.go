@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ecoshub/termium/internal/utils"
+	"github.com/ecoshub/termium/utils"
 )
 
 type StackPanel struct {

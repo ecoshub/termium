@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ecoshub/termium/internal/ansi"
-	"github.com/ecoshub/termium/internal/panel"
-	"github.com/ecoshub/termium/internal/utils"
+	"github.com/ecoshub/termium/ansi"
+	"github.com/ecoshub/termium/panel"
+	"github.com/ecoshub/termium/utils"
 )
 
 func (s *Screen) RenderPeriodically(refreshRate time.Duration) {
