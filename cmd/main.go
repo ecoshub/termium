@@ -22,16 +22,16 @@ func customScreen() {
 	}
 
 	scc := &panel.Config{
-		Size: &dimension.D2{
+		Size: &dimension.Vector{
 			X: screen.TerminalWith,
 			Y: 5,
 		},
 	}
 
 	c1 := panel.NewStackPanel(scc)
-	sc := &screen.SectionConfig{
+	sc := &screen.ComponentConfig{
 		Title: "output:",
-		Pos: &dimension.D2{
+		Position: &dimension.Vector{
 			X: 0,
 			Y: screen.TerminalHeight - 5 - 1 - 1 - 1,
 		},
@@ -41,7 +41,7 @@ func customScreen() {
 	s.AddNewComponent(c1, sc)
 
 	scc2 := &panel.Config{
-		Size: &dimension.D2{
+		Size: &dimension.Vector{
 			X: 100,
 			Y: 5,
 		},
@@ -49,9 +49,9 @@ func customScreen() {
 	}
 
 	c2 := panel.NewStackPanel(scc2)
-	sc2 := &screen.SectionConfig{
+	sc2 := &screen.ComponentConfig{
 		Title: "TEST PANEL 01:",
-		Pos: &dimension.D2{
+		Position: &dimension.Vector{
 			X: 1,
 			Y: 1,
 		},
@@ -95,17 +95,17 @@ func defaultScreen() {
 		return
 	}
 
-	c1 := panel.NewBasePanel(&panel.Config{Size: &dimension.D2{X: 32, Y: 5}})
-	s.AddNewComponent(c1, &screen.SectionConfig{Title: "--- FIRST ----", Pos: &dimension.D2{X: 1, Y: 1}, RenderTitle: true})
+	c1 := panel.NewBasePanel(&panel.Config{Size: &dimension.Vector{X: 32, Y: 5}})
+	s.AddNewComponent(c1, &screen.ComponentConfig{Title: "--- FIRST ----", Position: &dimension.Vector{X: 1, Y: 1}, RenderTitle: true})
 
-	c2 := panel.NewBasePanel(&panel.Config{Size: &dimension.D2{X: 32, Y: 3}})
-	s.AddNewComponent(c2, &screen.SectionConfig{Title: "--- SECOND ---", Pos: &dimension.D2{X: 1, Y: 7}, RenderTitle: true})
+	c2 := panel.NewBasePanel(&panel.Config{Size: &dimension.Vector{X: 32, Y: 3}})
+	s.AddNewComponent(c2, &screen.ComponentConfig{Title: "--- SECOND ---", Position: &dimension.Vector{X: 1, Y: 7}, RenderTitle: true})
 
-	c3 := panel.NewBasePanel(&panel.Config{Size: &dimension.D2{X: 64, Y: 20}})
-	s.AddNewComponent(c3, &screen.SectionConfig{Title: "--- THIRD ---", Pos: &dimension.D2{X: 34, Y: 1}, RenderTitle: true})
+	c3 := panel.NewBasePanel(&panel.Config{Size: &dimension.Vector{X: 64, Y: 20}})
+	s.AddNewComponent(c3, &screen.ComponentConfig{Title: "--- THIRD ---", Position: &dimension.Vector{X: 34, Y: 1}, RenderTitle: true})
 
-	c4 := panel.NewBasePanel(&panel.Config{Size: &dimension.D2{X: 32, Y: 10}})
-	s.AddNewComponent(c4, &screen.SectionConfig{Title: "--- FORTH ---", Pos: &dimension.D2{X: 1, Y: 11}, RenderTitle: true})
+	c4 := panel.NewBasePanel(&panel.Config{Size: &dimension.Vector{X: 32, Y: 10}})
+	s.AddNewComponent(c4, &screen.ComponentConfig{Title: "--- FORTH ---", Position: &dimension.Vector{X: 1, Y: 11}, RenderTitle: true})
 
 	s.AttachCommandPalletFunc(func(a *palette.Action) {})
 

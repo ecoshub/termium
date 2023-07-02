@@ -21,9 +21,9 @@ type Screen struct {
 
 	defaultCursorPosX int
 	defaultCursorPosY int
-	size              *dimension.D2
+	size              *dimension.Vector
 	commandPalette    *palette.Command
-	sections          []*Section
+	components        []*Component
 	buffer            [][]rune
 	lastRender        time.Time
 	started           bool
@@ -31,13 +31,13 @@ type Screen struct {
 
 func NewScreen() (*Screen, error) {
 	return &Screen{
-		size: &dimension.D2{
+		size: &dimension.Vector{
 			X: TerminalWith,
 			Y: TerminalHeight,
 		},
 		defaultCursorPosX: 0,
 		defaultCursorPosY: TerminalHeight,
-		sections:          make([]*Section, 0, 4),
+		components:        make([]*Component, 0, 4),
 		buffer:            utils.InitRuneMatrix(TerminalWith, TerminalHeight, ' '),
 	}, nil
 }
@@ -53,11 +53,11 @@ func NewDefaultScreen() (*Screen, error) {
 		return nil, err
 	}
 	return &Screen{
-		size: &dimension.D2{
+		size: &dimension.Vector{
 			X: TerminalWith,
 			Y: TerminalHeight - DefaultCommandPaletteHeight,
 		},
-		sections:          make([]*Section, 0, 4),
+		components:        make([]*Component, 0, 4),
 		commandPalette:    cp,
 		defaultCursorPosX: DefaultCommandPalettePositionX,
 		defaultCursorPosY: TerminalHeight - DefaultCommandPaletteHeight + len(pc.PromptString) + 1,

@@ -51,7 +51,7 @@ func (bp *BasePanel) ClearLine(index int) {
 	bp.buffer[index] = utils.InitRuneArray(bp.Config.Size.X, ' ')
 }
 
-func (bp *BasePanel) GetSize() *dimension.D2 {
+func (bp *BasePanel) GetSize() *dimension.Vector {
 	return bp.Config.Size
 }
 

@@ -52,27 +52,27 @@ func (s *Screen) render() {
 }
 
 func (s *Screen) readComponents() {
-	for _, sec := range s.sections {
-		s.readComponent(sec)
+	for _, c := range s.components {
+		s.readComponent(c)
 	}
 	s.calculateFPS()
 }
 
-func (s *Screen) readComponent(sec *Section) {
-	size := sec.p.GetSize()
-	buffer := sec.p.GetBuffer()
-	title := panel.FixedSizeLine(sec.conf.Title, size.X)
+func (s *Screen) readComponent(c *Component) {
+	size := c.p.GetSize()
+	buffer := c.p.GetBuffer()
+	title := panel.FixedSizeLine(c.conf.Title, size.X)
 
 	offset := 0
-	if sec.conf.RenderTitle {
+	if c.conf.RenderTitle {
 		// render title
-		copy(s.buffer[sec.conf.Pos.Y][sec.conf.Pos.X:sec.conf.Pos.X+size.X], title[:size.X])
+		copy(s.buffer[c.conf.Position.Y][c.conf.Position.X:c.conf.Position.X+size.X], title[:size.X])
 		offset += 1
 	}
 
 	// render component
 	for j := 0; j < size.Y; j++ {
-		copy(s.buffer[j+sec.conf.Pos.Y+offset][sec.conf.Pos.X:sec.conf.Pos.X+size.X], buffer[j][:size.X])
+		copy(s.buffer[j+c.conf.Position.Y+offset][c.conf.Position.X:c.conf.Position.X+size.X], buffer[j][:size.X])
 	}
 }
 

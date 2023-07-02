@@ -3,7 +3,6 @@ module term
 go 1.20
 
 require (
-	github.com/ecoshub/breakx v0.0.0-20210513080631-607cac495403
 	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203
 	golang.org/x/crypto v0.10.0
 )

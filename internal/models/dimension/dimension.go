@@ -1,6 +1,6 @@
 package dimension
 
-type D2 struct {
+type Vector struct {
 	X int
 	Y int
 }
