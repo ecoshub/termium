@@ -1,8 +1,8 @@
-package component
+package panel
 
 import "term/internal/models/dimension"
 
-type Component interface {
+type Panel interface {
 	GetSize() *dimension.D2
 	GetBuffer() [][]rune
 }

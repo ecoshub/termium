@@ -1,8 +1,8 @@
 package screen
 
 import (
-	"term/internal/component"
 	"term/internal/models/dimension"
+	"term/internal/panel"
 )
 
 type SectionConfig struct {
@@ -12,16 +12,16 @@ type SectionConfig struct {
 }
 
 type Section struct {
-	c    component.Component
+	p    panel.Panel
 	conf *SectionConfig
 }
 
-func (s *Screen) AddNewComponent(c component.Component, sc *SectionConfig) {
-	if sc.Pos.X+c.GetSize().X > s.size.X {
+func (s *Screen) AddNewComponent(p panel.Panel, sc *SectionConfig) {
+	if sc.Pos.X+p.GetSize().X > s.size.X {
 		panic("component is not fitting on current terminal size")
 	}
-	if sc.Pos.Y+c.GetSize().Y > s.size.Y {
+	if sc.Pos.Y+p.GetSize().Y > s.size.Y {
 		panic("component is not fitting on current terminal size")
 	}
-	s.sections = append(s.sections, &Section{c: c, conf: sc})
+	s.sections = append(s.sections, &Section{p: p, conf: sc})
 }

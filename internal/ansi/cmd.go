@@ -4,46 +4,50 @@ import (
 	"fmt"
 )
 
+const (
+	EscapeChar string = "\x1b"
+)
+
 func EraseLine() {
-	print("\x1b[2K")
+	print(EscapeChar + "[2K")
+}
+
+func ClearScreen() {
+	print(EscapeChar + "[2J")
+}
+
+func SaveCursorPos() {
+	print(EscapeChar + "7")
+}
+
+func RestoreCursorPos() {
+	print(EscapeChar + "8")
+}
+
+func ResetAllModes() {
+	print(EscapeChar + "[0m")
 }
 
 func GoLeft(n int) {
-	fmt.Printf("\x1b[%dD", n)
+	fmt.Printf(EscapeChar+"[%dD", n)
 }
 
 func GoRight(n int) {
-	fmt.Printf("\x1b[%dC", n)
+	fmt.Printf(EscapeChar+"[%dC", n)
 }
 
 func GoUp(n int) {
-	fmt.Printf("\x1b[%dA", n)
+	fmt.Printf(EscapeChar+"[%dA", n)
 }
 
 func GoDown(n int) {
-	fmt.Printf("\x1b[%dB", n)
+	fmt.Printf(EscapeChar+"[%dB", n)
 }
 
 func GoToFirstBlock() {
 	Goto(0, 0)
 }
 
-func ClearScreen() {
-	print("\x1b[2J")
-}
-
 func Goto(l, c int) {
-	fmt.Printf("\x1b[%d;%dH", l, c)
-}
-
-func SaveCursorPos() {
-	print("\x1b7")
-}
-
-func RestoreCursorPos() {
-	print("\x1b8")
-}
-
-func ResetAllModes() {
-	print("\x1b[0m")
+	fmt.Printf(EscapeChar+"[%d;%dH", l, c)
 }

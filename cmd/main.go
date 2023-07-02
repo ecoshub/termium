@@ -2,14 +2,10 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"strings"
-	"term/internal/component/basic"
-	"term/internal/component/stack"
 	"term/internal/models/dimension"
 	"term/internal/palette"
+	"term/internal/panel"
 	"term/internal/screen"
-	"time"
 )
 
 func main() {
@@ -25,14 +21,14 @@ func customScreen() {
 		return
 	}
 
-	scc := &stack.Config{
+	scc := &panel.Config{
 		Size: &dimension.D2{
 			X: screen.TerminalWith,
 			Y: 5,
 		},
 	}
 
-	c1 := stack.New(scc)
+	c1 := panel.NewStackPanel(scc)
 	sc := &screen.SectionConfig{
 		Title: "output:",
 		Pos: &dimension.D2{
@@ -44,15 +40,15 @@ func customScreen() {
 
 	s.AddNewComponent(c1, sc)
 
-	scc2 := &stack.Config{
+	scc2 := &panel.Config{
 		Size: &dimension.D2{
 			X: 100,
 			Y: 5,
 		},
-		Dummy: true,
+		AutoDummyInput: true,
 	}
 
-	c2 := stack.New(scc2)
+	c2 := panel.NewStackPanel(scc2)
 	sc2 := &screen.SectionConfig{
 		Title: "TEST PANEL 01:",
 		Pos: &dimension.D2{
@@ -72,14 +68,16 @@ func customScreen() {
 
 	s.AttachCommandPallet(cp)
 
-	// go useComponent(s, c1)
-
 	s.AttachCommandPalletFunc(func(a *palette.Action) {
 		switch a.Action {
 		case palette.ActionEnter:
-			element := strings.TrimPrefix(a.Input, "add ")
-			c1.Append(" > " + element)
+			c1.Append(" > " + a.Input)
+			cp.AddToHistory(a.Input)
+			if a.Input == "clear" {
+				c1.Clear()
+			}
 		}
+		s.Render()
 	})
 
 	s.Start()
@@ -87,20 +85,6 @@ func customScreen() {
 	s.RenderPeriodically(screen.DefaultRefreshDelay)
 
 	select {}
-}
-
-func useComponent(s *screen.Screen, c *basic.Component) {
-	var r int
-	var n int
-	for {
-		r = rand.Intn(300) + 20
-		n = rand.Intn(c.GetSize().Y)
-
-		time.Sleep(time.Duration(r) * time.Millisecond)
-		c.Insert(n, fmt.Sprintf("hello_%d", r))
-		time.Sleep(time.Duration(r) * time.Millisecond)
-		s.Render()
-	}
 }
 
 func defaultScreen() {
@@ -111,17 +95,17 @@ func defaultScreen() {
 		return
 	}
 
-	c1 := basic.New(&basic.Config{Title: "--- FIRST ----", Size: &dimension.D2{X: 32, Y: 5}})
-	s.AddNewComponent(c1, &screen.SectionConfig{Pos: &dimension.D2{X: 1, Y: 1}, RenderTitle: true})
+	c1 := panel.NewBasePanel(&panel.Config{Size: &dimension.D2{X: 32, Y: 5}})
+	s.AddNewComponent(c1, &screen.SectionConfig{Title: "--- FIRST ----", Pos: &dimension.D2{X: 1, Y: 1}, RenderTitle: true})
 
-	c2 := basic.New(&basic.Config{Title: "--- SECOND ---", Size: &dimension.D2{X: 32, Y: 3}})
-	s.AddNewComponent(c2, &screen.SectionConfig{Pos: &dimension.D2{X: 1, Y: 7}, RenderTitle: true})
+	c2 := panel.NewBasePanel(&panel.Config{Size: &dimension.D2{X: 32, Y: 3}})
+	s.AddNewComponent(c2, &screen.SectionConfig{Title: "--- SECOND ---", Pos: &dimension.D2{X: 1, Y: 7}, RenderTitle: true})
 
-	c3 := basic.New(&basic.Config{Title: "--- THIRD ---", Size: &dimension.D2{X: 64, Y: 20}})
-	s.AddNewComponent(c3, &screen.SectionConfig{Pos: &dimension.D2{X: 34, Y: 1}, RenderTitle: true})
+	c3 := panel.NewBasePanel(&panel.Config{Size: &dimension.D2{X: 64, Y: 20}})
+	s.AddNewComponent(c3, &screen.SectionConfig{Title: "--- THIRD ---", Pos: &dimension.D2{X: 34, Y: 1}, RenderTitle: true})
 
-	c4 := basic.New(&basic.Config{Title: "--- FORTH ---", Size: &dimension.D2{X: 32, Y: 10}})
-	s.AddNewComponent(c4, &screen.SectionConfig{Pos: &dimension.D2{X: 1, Y: 11}, RenderTitle: true})
+	c4 := panel.NewBasePanel(&panel.Config{Size: &dimension.D2{X: 32, Y: 10}})
+	s.AddNewComponent(c4, &screen.SectionConfig{Title: "--- FORTH ---", Pos: &dimension.D2{X: 1, Y: 11}, RenderTitle: true})
 
 	s.AttachCommandPalletFunc(func(a *palette.Action) {})
 

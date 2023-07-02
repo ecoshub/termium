@@ -13,7 +13,7 @@ const (
 	DefaultCommandPalettePositionX int    = 0
 	DefaultCommandPalettePrompt    string = "  > "
 
-	DefaultRefreshDelay time.Duration = time.Millisecond * 100
+	DefaultRefreshDelay time.Duration = time.Millisecond * 200
 )
 
 type Screen struct {

@@ -3,7 +3,7 @@ package screen
 import (
 	"strings"
 	"term/internal/ansi"
-	"term/internal/component"
+	"term/internal/panel"
 	"term/internal/utils"
 	"time"
 )
@@ -59,9 +59,9 @@ func (s *Screen) readComponents() {
 }
 
 func (s *Screen) readComponent(sec *Section) {
-	size := sec.c.GetSize()
-	buffer := sec.c.GetBuffer()
-	title := component.ResizeLine(sec.conf.Title, size.X)
+	size := sec.p.GetSize()
+	buffer := sec.p.GetBuffer()
+	title := panel.FixedSizeLine(sec.conf.Title, size.X)
 
 	offset := 0
 	if sec.conf.RenderTitle {

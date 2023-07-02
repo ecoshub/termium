@@ -1,3 +1,5 @@
+github.com/ecoshub/breakx v0.0.0-20210513080631-607cac495403 h1:zQis/Zycw+D1TFoG1oXEnq+xo6oZ0pkRiu+5WFjForE=
+github.com/ecoshub/breakx v0.0.0-20210513080631-607cac495403/go.mod h1:Ldo2rdbHVW6N9ldPRrRTvII70GJJ9cfk3+4kC3nEAzI=
 github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203 h1:XBBHcIb256gUJtLmY22n99HaZTz+r2Z51xUPi01m3wg=
 github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203/go.mod h1:E1jcSv8FaEny+OP/5k9UxZVw9YFWGj7eI4KR/iOBqCg=
 golang.org/x/crypto v0.10.0 h1:LKqV2xt9+kDzSTfOhx4FrkEBcMrAgHSYgzywV9zcGmM=

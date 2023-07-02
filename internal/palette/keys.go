@@ -70,6 +70,7 @@ func (p *Command) keyDefault(char rune) {
 func (p *Command) keyArrowUp() {
 	up := p.history.Up()
 	print(up)
+	p.runActionFunction(ActionInnerEvent, up)
 	p.cursorIndex = len(p.Config.PromptString) + len(up)
 	p.buffer = []rune(up)
 }
@@ -77,6 +78,7 @@ func (p *Command) keyArrowUp() {
 func (p *Command) keyArrowDown() {
 	down := p.history.Down()
 	print(down)
+	p.runActionFunction(ActionInnerEvent, down)
 	p.cursorIndex = len(p.Config.PromptString) + len(down)
 	p.buffer = []rune(down)
 }

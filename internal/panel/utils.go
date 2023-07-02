@@ -1,11 +1,11 @@
-package component
+package panel
 
 import (
 	"term/internal/ansi"
 	"term/internal/utils"
 )
 
-func ResizeLine(line string, limit int) []rune {
+func FixedSizeLine(line string, limit int) []rune {
 	line = ansi.Strip(line)
 	if utils.PrintableLen(line) >= limit {
 		line := utils.CutUnicode(line, limit)

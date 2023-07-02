@@ -5,7 +5,7 @@ type ActionCode int
 const (
 	ActionEsc          ActionCode = 0xf0
 	ActionEnter        ActionCode = 0xf1
-	ActionRequestReset ActionCode = 0xf2
+	ActionInnerEvent   ActionCode = 0xf2
 	ActionCursorUpdate ActionCode = 0xf3
 )
 
