@@ -2,10 +2,11 @@ package screen
 
 import (
 	"errors"
-	"termium/internal/models/dimension"
-	"termium/internal/palette"
-	"termium/internal/utils"
 	"time"
+
+	"github.com/ecoshub/termium/internal/models/dimension"
+	"github.com/ecoshub/termium/internal/palette"
+	"github.com/ecoshub/termium/internal/utils"
 )
 
 const (

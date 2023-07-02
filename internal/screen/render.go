@@ -2,10 +2,11 @@ package screen
 
 import (
 	"strings"
-	"termium/internal/ansi"
-	"termium/internal/panel"
-	"termium/internal/utils"
 	"time"
+
+	"github.com/ecoshub/termium/internal/ansi"
+	"github.com/ecoshub/termium/internal/panel"
+	"github.com/ecoshub/termium/internal/utils"
 )
 
 func (s *Screen) RenderPeriodically(refreshRate time.Duration) {

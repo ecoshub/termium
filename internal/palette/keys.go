@@ -2,7 +2,8 @@ package palette
 
 import (
 	"os"
-	"termium/internal/ansi"
+
+	"github.com/ecoshub/termium/internal/ansi"
 )
 
 const (

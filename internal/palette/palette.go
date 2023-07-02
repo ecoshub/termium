@@ -2,8 +2,8 @@ package palette
 
 import (
 	"os"
-	"termium/internal/history"
 
+	"github.com/ecoshub/termium/internal/history"
 	"github.com/eiannone/keyboard"
 )
 

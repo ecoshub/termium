@@ -1,8 +1,8 @@
 package panel
 
 import (
-	"termium/internal/ansi"
-	"termium/internal/utils"
+	"github.com/ecoshub/termium/internal/ansi"
+	"github.com/ecoshub/termium/internal/utils"
 )
 
 func FixedSizeLine(line string, limit int) []rune {

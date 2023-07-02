@@ -1,8 +1,8 @@
 package screen
 
 import (
-	"termium/internal/models/dimension"
-	"termium/internal/panel"
+	"github.com/ecoshub/termium/internal/models/dimension"
+	"github.com/ecoshub/termium/internal/panel"
 )
 
 type ComponentConfig struct {

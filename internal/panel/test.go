@@ -2,8 +2,9 @@ package panel
 
 import (
 	"fmt"
-	"termium/internal/utils"
 	"time"
+
+	"github.com/ecoshub/termium/internal/utils"
 )
 
 type StackPanel struct {

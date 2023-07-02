@@ -1,4 +1,4 @@
-module termium
+module github.com/ecoshub/termium
 
 go 1.20
 

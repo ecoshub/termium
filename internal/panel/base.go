@@ -3,9 +3,10 @@ package panel
 import (
 	"fmt"
 	"math/rand"
-	"termium/internal/models/dimension"
-	"termium/internal/utils"
 	"time"
+
+	"github.com/ecoshub/termium/internal/models/dimension"
+	"github.com/ecoshub/termium/internal/utils"
 )
 
 type BasePanel struct {

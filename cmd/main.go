@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"termium/internal/models/dimension"
-	"termium/internal/palette"
-	"termium/internal/panel"
-	"termium/internal/screen"
+
+	"github.com/ecoshub/termium/internal/models/dimension"
+	"github.com/ecoshub/termium/internal/palette"
+	"github.com/ecoshub/termium/internal/panel"
+	"github.com/ecoshub/termium/internal/screen"
 )
 
 func main() {
