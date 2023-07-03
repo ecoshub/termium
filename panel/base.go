@@ -21,15 +21,17 @@ func NewBasePanel(conf *Config) *BasePanel {
 		buffer: utils.InitRuneMatrix(conf.Size.X, conf.Size.Y, ' '),
 		lines:  make([]string, conf.Size.Y),
 	}
-	go func() {
-		n := rand.Intn(26)
-		count := 0
-		for range time.NewTicker(time.Millisecond * 500).C {
-			bp.buffer = utils.InitRuneMatrix(bp.Config.Size.X, bp.Config.Size.Y, rune(n+97))
-			bp.Insert(count, "\x1b[1;31mHello\x1b[0m my name is eco")
-			count = (count + 1) % (bp.Config.Size.Y)
-		}
-	}()
+	if conf.AutoDummyInput {
+		go func() {
+			n := rand.Intn(26)
+			count := 0
+			for range time.NewTicker(time.Millisecond * 500).C {
+				bp.buffer = utils.InitRuneMatrix(bp.Config.Size.X, bp.Config.Size.Y, rune(n+97))
+				bp.Insert(count, "\x1b[1;31mHello\x1b[0m my name is eco")
+				count = (count + 1) % (bp.Config.Size.Y)
+			}
+		}()
+	}
 	return bp
 }
 
