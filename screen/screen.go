@@ -82,3 +82,11 @@ func (s *Screen) AttachCommandPalletFunc(f func(a *palette.Action)) {
 		s.commandPalette.ListenActions(f)
 	}
 }
+
+func (s *Screen) AddToCommandPalletHistory(line string) {
+	s.commandPalette.AddToHistory(line)
+}
+
+func (s *Screen) ClearCommandPalletHistory() {
+	s.commandPalette.ClearHistory()
+}
