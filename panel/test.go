@@ -1,9 +1,6 @@
 package panel
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/ecoshub/termium/utils"
 )
 
@@ -16,24 +13,15 @@ func NewStackPanel(conf *Config) *StackPanel {
 	ep := &StackPanel{
 		BasePanel: &BasePanel{
 			Config: conf,
-			buffer: utils.InitRuneMatrix(conf.Size.X, conf.Size.Y, ' '),
-			lines:  make([]string, conf.Size.Y),
+			buffer: utils.InitRuneMatrix(conf.SizeX, conf.SizeY, ' '),
+			lines:  make([]string, conf.SizeY),
 		},
-	}
-	if conf.AutoDummyInput {
-		go func() {
-			n := 0
-			for range time.NewTicker(time.Millisecond * 250).C {
-				ep.Append(fmt.Sprintf("%s_%d", "\x1b[1;31mHello\x1b[0m my name is eco", n))
-				n++
-			}
-		}()
 	}
 	return ep
 }
 
 func (ep *StackPanel) Append(line string) {
-	if ep.index >= ep.Config.Size.Y {
+	if ep.index >= ep.Config.SizeY {
 		ep.lines = ep.lines[1:]
 		ep.lines = append(ep.lines, line)
 	} else {

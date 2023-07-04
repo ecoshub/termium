@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ecoshub/termium/models/dimension"
 	"github.com/ecoshub/termium/palette"
 	"github.com/ecoshub/termium/utils"
 )
@@ -14,7 +13,7 @@ const (
 	DefaultCommandPalettePositionX int    = 0
 	DefaultCommandPalettePrompt    string = "  > "
 
-	DefaultRefreshDelay time.Duration = time.Millisecond * 200
+	DefaultRefreshDelay time.Duration = time.Millisecond * 50
 )
 
 type Screen struct {
@@ -22,7 +21,8 @@ type Screen struct {
 
 	defaultCursorPosX int
 	defaultCursorPosY int
-	size              *dimension.Vector
+	sizeX             int
+	sizeY             int
 	commandPalette    *palette.Command
 	components        []*Component
 	buffer            [][]rune
@@ -32,10 +32,8 @@ type Screen struct {
 
 func NewScreen() (*Screen, error) {
 	return &Screen{
-		size: &dimension.Vector{
-			X: TerminalWith,
-			Y: TerminalHeight,
-		},
+		sizeY:             TerminalHeight,
+		sizeX:             TerminalWith,
 		defaultCursorPosX: 0,
 		defaultCursorPosY: TerminalHeight,
 		components:        make([]*Component, 0, 4),
@@ -54,10 +52,8 @@ func NewDefaultScreen() (*Screen, error) {
 		return nil, err
 	}
 	return &Screen{
-		size: &dimension.Vector{
-			X: TerminalWith,
-			Y: TerminalHeight - DefaultCommandPaletteHeight,
-		},
+		sizeX:             TerminalWith,
+		sizeY:             TerminalHeight - DefaultCommandPaletteHeight,
 		components:        make([]*Component, 0, 4),
 		commandPalette:    cp,
 		defaultCursorPosX: DefaultCommandPalettePositionX,

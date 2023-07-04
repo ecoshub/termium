@@ -60,20 +60,20 @@ func (s *Screen) readComponents() {
 }
 
 func (s *Screen) readComponent(c *Component) {
-	size := c.p.GetSize()
+	sizeX, sizeY := c.p.GetSize()
 	buffer := c.p.GetBuffer()
-	title := panel.FixedSizeLine(c.conf.Title, size.X)
+	title := panel.FixedSizeLine(c.conf.Title, sizeX)
 
 	offset := 0
 	if c.conf.RenderTitle {
 		// render title
-		copy(s.buffer[c.conf.Position.Y][c.conf.Position.X:c.conf.Position.X+size.X], title[:size.X])
+		copy(s.buffer[c.conf.PosY][c.conf.PosX:c.conf.PosX+sizeX], title[:sizeX])
 		offset += 1
 	}
 
 	// render component
-	for j := 0; j < size.Y; j++ {
-		copy(s.buffer[j+c.conf.Position.Y+offset][c.conf.Position.X:c.conf.Position.X+size.X], buffer[j][:size.X])
+	for j := 0; j < sizeY; j++ {
+		copy(s.buffer[j+c.conf.PosY+offset][c.conf.PosX:c.conf.PosX+sizeX], buffer[j][:sizeX])
 	}
 }
 

@@ -2,10 +2,7 @@ package panel
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 
-	"github.com/ecoshub/termium/models/dimension"
 	"github.com/ecoshub/termium/utils"
 )
 
@@ -18,26 +15,15 @@ type BasePanel struct {
 func NewBasePanel(conf *Config) *BasePanel {
 	bp := &BasePanel{
 		Config: conf,
-		buffer: utils.InitRuneMatrix(conf.Size.X, conf.Size.Y, ' '),
-		lines:  make([]string, conf.Size.Y),
-	}
-	if conf.AutoDummyInput {
-		go func() {
-			n := rand.Intn(26)
-			count := 0
-			for range time.NewTicker(time.Millisecond * 500).C {
-				bp.buffer = utils.InitRuneMatrix(bp.Config.Size.X, bp.Config.Size.Y, rune(n+97))
-				bp.Insert(count, "\x1b[1;31mHello\x1b[0m my name is eco")
-				count = (count + 1) % (bp.Config.Size.Y)
-			}
-		}()
+		buffer: utils.InitRuneMatrix(conf.SizeX, conf.SizeY, ' '),
+		lines:  make([]string, conf.SizeY),
 	}
 	return bp
 }
 
 func (bp *BasePanel) Insert(index int, line string) error {
-	if index >= (bp.Config.Size.Y) {
-		return fmt.Errorf("index out of range. index: %d, size: %d", index, bp.Config.Size.Y)
+	if index >= (bp.Config.SizeY) {
+		return fmt.Errorf("index out of range. index: %d, size: %d", index, bp.Config.SizeY)
 	}
 	bp.lines[index] = line
 	bp.renderLine(index)
@@ -45,17 +31,17 @@ func (bp *BasePanel) Insert(index int, line string) error {
 }
 
 func (bp *BasePanel) Clear() {
-	bp.lines = make([]string, bp.Config.Size.Y)
-	bp.buffer = utils.InitRuneMatrix(bp.Config.Size.X, bp.Config.Size.Y, ' ')
+	bp.lines = make([]string, bp.Config.SizeY)
+	bp.buffer = utils.InitRuneMatrix(bp.Config.SizeX, bp.Config.SizeY, ' ')
 	bp.renderList()
 }
 
 func (bp *BasePanel) ClearLine(index int) {
-	bp.buffer[index] = utils.InitRuneArray(bp.Config.Size.X, ' ')
+	bp.buffer[index] = utils.InitRuneArray(bp.Config.SizeX, ' ')
 }
 
-func (bp *BasePanel) GetSize() *dimension.Vector {
-	return bp.Config.Size
+func (bp *BasePanel) GetSize() (int, int) {
+	return bp.Config.SizeX, bp.Config.SizeY
 }
 
 func (bp *BasePanel) GetBuffer() [][]rune {
@@ -70,6 +56,6 @@ func (bp *BasePanel) renderList() {
 
 func (bp *BasePanel) renderLine(index int) {
 	line := bp.lines[index]
-	r := FixedSizeLine(line, bp.Config.Size.X)
+	r := FixedSizeLine(line, bp.Config.SizeX)
 	bp.buffer[index] = []rune(r)
 }

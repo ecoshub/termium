@@ -1,14 +1,14 @@
 package screen
 
 import (
-	"github.com/ecoshub/termium/models/dimension"
 	"github.com/ecoshub/termium/panel"
 )
 
 type ComponentConfig struct {
 	Title       string
 	RenderTitle bool
-	Position    *dimension.Vector
+	PosX        int
+	PosY        int
 }
 
 type Component struct {
@@ -17,10 +17,11 @@ type Component struct {
 }
 
 func (s *Screen) AddNewComponent(p panel.Panel, sc *ComponentConfig) {
-	if sc.Position.X+p.GetSize().X > s.size.X {
+	pSizeX, pSizeY := p.GetSize()
+	if sc.PosX+pSizeX > s.sizeX {
 		panic("component is not fitting on current terminal size")
 	}
-	if sc.Position.Y+p.GetSize().Y > s.size.Y {
+	if sc.PosY+pSizeY > s.sizeY {
 		panic("component is not fitting on current terminal size")
 	}
 	s.components = append(s.components, &Component{p: p, conf: sc})
