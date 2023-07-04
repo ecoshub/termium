@@ -16,6 +16,11 @@ type Component struct {
 	conf *ComponentConfig
 }
 
+func (s *Screen) ConstantText(posX, posY int, line string) {
+	p := panel.ConstantText(line)
+	s.AddNewComponent(p, &ComponentConfig{PosX: posX, PosY: posY})
+}
+
 func (s *Screen) AddNewComponent(p panel.Panel, sc *ComponentConfig) {
 	pSizeX, pSizeY := p.GetSize()
 	if sc.PosX+pSizeX > s.sizeX {

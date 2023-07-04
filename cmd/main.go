@@ -70,6 +70,8 @@ func customScreen() {
 		HistoryCapacity: palette.DefaultHistoryCapacity,
 	})
 
+	s.ConstantText(0, 9, "CONSTANT TEXT!")
+
 	s.AttachCommandPallet(cp)
 
 	s.AttachCommandPalletFunc(func(a *palette.Action) {
