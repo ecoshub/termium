@@ -1,6 +1,8 @@
 package screen
 
 import (
+	"os"
+
 	"github.com/ecoshub/termium/panel"
 )
 
@@ -18,16 +20,16 @@ type Component struct {
 
 func (s *Screen) ConstantText(posX, posY int, line string) {
 	p := panel.ConstantText(line)
-	s.AddNewComponent(p, &ComponentConfig{PosX: posX, PosY: posY})
+	s.Add(p, &ComponentConfig{PosX: posX, PosY: posY})
 }
 
-func (s *Screen) AddNewComponent(p panel.Panel, sc *ComponentConfig) {
+func (s *Screen) Add(p panel.Panel, sc *ComponentConfig) {
 	pSizeX, pSizeY := p.GetSize()
 	if sc.PosX+pSizeX > s.sizeX {
-		panic("component is not fitting on current terminal size")
+		os.Exit(1)
 	}
 	if sc.PosY+pSizeY > s.sizeY {
-		panic("component is not fitting on current terminal size")
+		os.Exit(1)
 	}
 	s.components = append(s.components, &Component{p: p, conf: sc})
 }

@@ -1,7 +1,7 @@
 package panel
 
-func ConstantText(line string) *BasePanel {
-	bp := NewBasePanel(&Config{SizeX: len(line), SizeY: 1})
-	bp.Insert(0, line)
+func ConstantText(line string) *Basic {
+	bp := NewBasic(len(line), 1)
+	bp.Write(0, line)
 	return bp
 }

@@ -3,10 +3,9 @@ package palette
 type ActionCode int
 
 const (
-	ActionEsc          ActionCode = 0xf0
-	ActionEnter        ActionCode = 0xf1
-	ActionInnerEvent   ActionCode = 0xf2
-	ActionCursorUpdate ActionCode = 0xf3
+	ActionEsc        ActionCode = 0xf0
+	ActionEnter      ActionCode = 0xf1
+	ActionInnerEvent ActionCode = 0xf2
 )
 
 type Action struct {

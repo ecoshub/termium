@@ -1,7 +1,6 @@
 package screen
 
 import (
-	"errors"
 	"time"
 
 	"github.com/ecoshub/termium/palette"
@@ -13,7 +12,7 @@ const (
 	DefaultCommandPalettePositionX int    = 0
 	DefaultCommandPalettePrompt    string = "  > "
 
-	DefaultRefreshDelay time.Duration = time.Millisecond * 50
+	DefaultRefreshDelay time.Duration = time.Millisecond * 100
 )
 
 type Screen struct {
@@ -23,11 +22,12 @@ type Screen struct {
 	defaultCursorPosY int
 	sizeX             int
 	sizeY             int
-	commandPalette    *palette.Command
 	components        []*Component
 	buffer            [][]rune
 	lastRender        time.Time
 	started           bool
+
+	CommandPalette *palette.Command
 }
 
 func NewScreen() (*Screen, error) {
@@ -55,34 +55,9 @@ func NewDefaultScreen() (*Screen, error) {
 		sizeX:             TerminalWith,
 		sizeY:             TerminalHeight - DefaultCommandPaletteHeight,
 		components:        make([]*Component, 0, 4),
-		commandPalette:    cp,
+		CommandPalette:    cp,
 		defaultCursorPosX: DefaultCommandPalettePositionX,
 		defaultCursorPosY: TerminalHeight - DefaultCommandPaletteHeight + len(pc.PromptString) + 1,
 		buffer:            utils.InitRuneMatrix(TerminalWith, TerminalHeight-DefaultCommandPaletteHeight, ' '),
 	}, nil
-}
-
-func (s *Screen) AttachCommandPallet(cp *palette.Command) error {
-	if s.commandPalette != nil {
-		return errors.New("already has command palette")
-	}
-	s.commandPalette = cp
-	s.defaultCursorPosX = DefaultCommandPalettePositionX
-	s.defaultCursorPosY = TerminalHeight - DefaultCommandPaletteHeight + len(cp.Config.PromptString) + 1
-	s.buffer = utils.InitRuneMatrix(TerminalWith, TerminalHeight-DefaultCommandPaletteHeight, ' ')
-	return nil
-}
-
-func (s *Screen) AttachCommandPalletFunc(f func(a *palette.Action)) {
-	if f != nil {
-		s.commandPalette.ListenActions(f)
-	}
-}
-
-func (s *Screen) AddToCommandPalletHistory(line string) {
-	s.commandPalette.AddToHistory(line)
-}
-
-func (s *Screen) ClearCommandPalletHistory() {
-	s.commandPalette.ClearHistory()
 }

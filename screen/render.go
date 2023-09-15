@@ -1,6 +1,8 @@
 package screen
 
 import (
+	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -9,6 +11,11 @@ import (
 	"github.com/ecoshub/termium/utils"
 )
 
+func (s *Screen) Run() {
+	s.Start()
+	s.RenderPeriodically(DefaultRefreshDelay)
+}
+
 func (s *Screen) RenderPeriodically(refreshRate time.Duration) {
 	for range time.NewTicker(refreshRate).C {
 		s.Render()
@@ -16,11 +23,21 @@ func (s *Screen) RenderPeriodically(refreshRate time.Duration) {
 }
 
 func (s *Screen) Start() {
+	defer s.Render()
+
 	if s.started {
 		return
 	}
 
-	go ListenInterrupt()
+	if len(s.components) == 0 {
+		fmt.Println("no component added to screen")
+		os.Exit(1)
+	}
+
+	go ListenInterrupt(func() {
+		fmt.Println("Exiting...")
+	})
+
 	ansi.ClearScreen()
 	s.drawCommandPallet()
 
@@ -32,7 +49,7 @@ func (s *Screen) Render() {
 		s.lastRender = time.Now()
 	}()
 
-	if s.commandPalette == nil {
+	if s.CommandPalette == nil {
 		s.render()
 		s.drawCommandPallet()
 		return
@@ -89,11 +106,11 @@ func (s *Screen) String() string {
 
 func (s *Screen) drawCommandPallet() {
 	ansi.Goto(s.defaultCursorPosY, s.defaultCursorPosX)
-	if s.commandPalette == nil {
+	if s.CommandPalette == nil {
 		return
 	}
 	ansi.EraseLine()
-	pb := s.commandPalette.Buffer()
+	pb := s.CommandPalette.Buffer()
 	print(pb)
 	ansi.Goto(s.defaultCursorPosY, utils.PrintableLen(pb)+1)
 }

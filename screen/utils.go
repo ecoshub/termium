@@ -19,14 +19,17 @@ func (s *Screen) calculateFPS() {
 	copy(s.buffer[0][s.sizeX-1-8:s.sizeX-1], runes[:8])
 }
 
-func ListenInterrupt() {
+func ListenInterrupt(interruptFunc func()) {
 	chanInterrupt := make(chan os.Signal, 1)
 	signal.Notify(chanInterrupt, os.Interrupt)
 	for {
 		select {
 		case <-chanInterrupt:
 			log.Print("Interrupted. Exiting...")
-			os.Exit(0)
+			if interruptFunc != nil {
+				interruptFunc()
+			}
+			os.Exit(1)
 		}
 	}
 }
