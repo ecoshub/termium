@@ -19,12 +19,16 @@ func main() {
 
 	// lets create a stack panel to use as a command history
 	historyPanel := panel.NewStackPanel(&panel.Config{
-		Width:                utils.TerminalWith,
-		Height:               5,
-		Title:                "History:",
-		RenderTitle:          true,
-		TitleBackgroundColor: 95,
-		ForegroundColor:      103,
+		Width:       utils.TerminalWith,
+		Height:      5,
+		Title:       "History:",
+		RenderTitle: true,
+		TitleStyle: &panel.Style{
+			BackgroundColor: 95,
+			ForegroundColor: 103,
+			SetBlink:        true,
+			SetBold:         true,
+		},
 	})
 
 	// lets add this panel to top left corner (0,0)

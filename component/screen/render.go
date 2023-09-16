@@ -1,9 +1,9 @@
 package screen
 
 import (
-	"strings"
 	"time"
 
+	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 )
@@ -86,25 +86,16 @@ func (s *Screen) readComponent(c *Component) {
 
 		// go to title position again to write title
 		ansi.GotoRowAndColumn(c.posY+1, c.posX)
-		line := ansi.Strip(panelConfig.Title)
-		line = strings.TrimSpace(line)
-		if len(line) > sizeX {
-			line = line[:sizeX]
-		}
-		print(ansi.SetColor(line, panelConfig.TitleForegroundColor, panelConfig.TitleBackgroundColor))
+		line := ansi.ClearLine(panelConfig.Title, sizeX)
+		line = panel.SetStyle(line, panelConfig.TitleStyle)
+		print(line)
 	}
 
 	for i := 0; i < sizeY; i++ {
 		ansi.GotoRowAndColumn(c.posY+i+offset+1, c.posX)
-		line := ansi.Strip(string(buffer[i]))
-		line = strings.TrimSpace(line)
-		if len(line) > sizeX {
-			r := []rune(line)
-			r = r[:sizeX-3]
-			line = string(r)
-			line += "..."
-		}
-		print(ansi.SetColor(line, panelConfig.ForegroundColor, panelConfig.BackgroundColor))
+		line := ansi.ClearLine(string(buffer[i]), sizeX)
+		line = panel.SetStyle(line, panelConfig.ContentStyle)
+		print(line)
 	}
 
 }

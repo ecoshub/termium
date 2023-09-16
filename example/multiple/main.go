@@ -16,39 +16,55 @@ func main() {
 	}
 
 	sp := panel.NewStackPanel(&panel.Config{
-		Width:                20,
-		Height:               10,
-		Title:                "Panel_1:",
-		RenderTitle:          true,
-		TitleBackgroundColor: 22,
-		ForegroundColor:      197,
+		Width:       20,
+		Height:      10,
+		Title:       "Panel_1:",
+		RenderTitle: true,
+		TitleStyle: &panel.Style{
+			BackgroundColor: 22,
+		},
+		ContentStyle: &panel.Style{
+			ForegroundColor: 197,
+		},
 	})
 
 	sp1 := panel.NewStackPanel(&panel.Config{
-		Width:                20,
-		Height:               10,
-		Title:                "Panel_2:",
-		RenderTitle:          true,
-		TitleBackgroundColor: 95,
-		ForegroundColor:      227,
+		Width:       20,
+		Height:      10,
+		Title:       "Panel_2:",
+		RenderTitle: true,
+		TitleStyle: &panel.Style{
+			BackgroundColor: 95,
+		},
+		ContentStyle: &panel.Style{
+			ForegroundColor: 227,
+		},
 	})
 
 	sp2 := panel.NewStackPanel(&panel.Config{
-		Width:                20,
-		Height:               10,
-		Title:                "Panel_3:",
-		RenderTitle:          true,
-		TitleBackgroundColor: 147,
-		ForegroundColor:      14,
+		Width:       20,
+		Height:      10,
+		Title:       "Panel_3:",
+		RenderTitle: true,
+		TitleStyle: &panel.Style{
+			BackgroundColor: 147,
+		},
+		ContentStyle: &panel.Style{
+			ForegroundColor: 14,
+		},
 	})
 
 	sp3 := panel.NewStackPanel(&panel.Config{
-		Width:                20,
-		Height:               10,
-		Title:                "Panel_4:",
-		RenderTitle:          true,
-		TitleBackgroundColor: 88,
-		ForegroundColor:      201,
+		Width:       20,
+		Height:      10,
+		Title:       "Panel_4:",
+		RenderTitle: true,
+		TitleStyle: &panel.Style{
+			BackgroundColor: 88,
+		},
+		ContentStyle: &panel.Style{
+			ForegroundColor: 201,
+		},
 	})
 
 	s.Add(sp, 0, 0)

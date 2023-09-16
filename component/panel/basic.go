@@ -6,15 +6,22 @@ import (
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
+type Style struct {
+	ForegroundColor int
+	BackgroundColor int
+	SetBold         bool
+	SetItalic       bool
+	SetUnderline    bool
+	SetBlink        bool
+}
+
 type Config struct {
-	Width                int
-	Height               int
-	Title                string
-	RenderTitle          bool
-	TitleForegroundColor int
-	TitleBackgroundColor int
-	ForegroundColor      int
-	BackgroundColor      int
+	Width        int
+	Height       int
+	Title        string
+	RenderTitle  bool
+	TitleStyle   *Style
+	ContentStyle *Style
 }
 
 type Panel interface {
@@ -40,6 +47,12 @@ func NewBasicPanel(conf *Config) *Basic {
 	height := conf.Height
 	if conf.RenderTitle {
 		height = conf.Height - 1
+	}
+	if conf.ContentStyle == nil {
+		conf.ContentStyle = &Style{}
+	}
+	if conf.TitleStyle == nil {
+		conf.TitleStyle = &Style{}
 	}
 	return &Basic{
 		width:  conf.Width,

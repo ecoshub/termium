@@ -20,6 +20,14 @@ const (
 	ResetAllModes       string = EscapeChar + "[0m"
 	SetForegroundColor  string = EscapeChar + "[38;5;%dm"
 	SetBackgroundColor  string = EscapeChar + "[48;5;%dm"
+	SetBold             string = EscapeChar + "[1m"
+	ResetBold           string = EscapeChar + "[22m"
+	SetItalic           string = EscapeChar + "[3m"
+	ResetItalic         string = EscapeChar + "[23m"
+	SetUnderline        string = EscapeChar + "[4m"
+	ResetUnderline      string = EscapeChar + "[24m"
+	SetBlink            string = EscapeChar + "[5m"
+	ResetBlink          string = EscapeChar + "[25m"
 )
 
 func GoLeftNChar(n int) {

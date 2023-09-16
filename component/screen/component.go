@@ -16,8 +16,8 @@ type Component struct {
 }
 
 // ConstantText add constant text to string if you don't want to change colors just enter zeros (0)
-func (s *Screen) ConstantText(posX, posY int, line string, foregroundColor, backgroundColor int) {
-	p := panel.ConstantText(line, foregroundColor, backgroundColor)
+func (s *Screen) ConstantText(posX, posY int, line string, sty *panel.Style) {
+	p := panel.ConstantText(line, sty)
 	s.Add(p, posX, posY)
 }
 
