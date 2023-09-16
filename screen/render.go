@@ -2,18 +2,17 @@ package screen
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/ecoshub/termium/ansi"
 	"github.com/ecoshub/termium/panel"
-	"github.com/ecoshub/termium/utils"
 )
 
+// Run async run command starts and renders periodically
 func (s *Screen) Run() {
 	s.Start()
-	s.RenderPeriodically(DefaultRefreshDelay)
+	go s.RenderPeriodically(DefaultRefreshDelay)
 }
 
 func (s *Screen) RenderPeriodically(refreshRate time.Duration) {
@@ -30,15 +29,15 @@ func (s *Screen) Start() {
 	}
 
 	if len(s.components) == 0 {
-		fmt.Println("no component added to screen")
-		os.Exit(1)
+		panic("no component added to screen")
 	}
 
-	go ListenInterrupt(func() {
+	go WaitInterrupt(func() {
 		fmt.Println("Exiting...")
 	})
 
 	ansi.ClearScreen()
+
 	s.drawCommandPallet()
 
 	s.started = true
@@ -49,19 +48,23 @@ func (s *Screen) Render() {
 		s.lastRender = time.Now()
 	}()
 
+	ansi.MakeCursorInvisible()
+	defer ansi.MakeCursorVisible()
+
 	if s.CommandPalette == nil {
 		s.render()
 		s.drawCommandPallet()
 		return
 	}
 
-	ansi.SaveCursorPos()
 	s.render()
-	ansi.RestoreCursorPos()
 	s.drawCommandPallet()
 }
 
 func (s *Screen) render() {
+	ansi.SaveCursorPos()
+	defer ansi.RestoreCursorPos()
+
 	ansi.GoToFirstBlock()
 
 	s.readComponents()
@@ -89,9 +92,10 @@ func (s *Screen) readComponent(c *Component) {
 	}
 
 	// render component
-	for j := 0; j < sizeY; j++ {
-		copy(s.buffer[j+c.conf.PosY+offset][c.conf.PosX:c.conf.PosX+sizeX], buffer[j][:sizeX])
+	for i := 0; i < sizeY; i++ {
+		copy(s.buffer[i+c.conf.PosY+offset][c.conf.PosX:c.conf.PosX+sizeX], buffer[i][:sizeX])
 	}
+
 }
 
 func (s *Screen) String() string {
@@ -106,11 +110,12 @@ func (s *Screen) String() string {
 
 func (s *Screen) drawCommandPallet() {
 	ansi.Goto(s.defaultCursorPosY, s.defaultCursorPosX)
-	if s.CommandPalette == nil {
+	if s.CommandPalette == nil || !s.CommandPalette.Config.Enable {
 		return
 	}
+
 	ansi.EraseLine()
 	pb := s.CommandPalette.Buffer()
 	print(pb)
-	ansi.Goto(s.defaultCursorPosY, utils.PrintableLen(pb)+1)
+	ansi.Goto(s.defaultCursorPosY, s.CommandPalette.cursorIndex+1)
 }

@@ -3,39 +3,36 @@ package main
 import (
 	"fmt"
 
-	"github.com/ecoshub/termium/palette"
 	"github.com/ecoshub/termium/panel"
 	"github.com/ecoshub/termium/screen"
 )
 
 func main() {
 	// create a screen. this is representation of terminal screen
-	s, err := screen.NewScreen()
+	s, err := screen.New()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// lets create a stack panel to use as a command history
-	historyPanel := panel.NewStack(screen.TerminalWith, 5)
+	historyPanel := panel.NewStackPanel(screen.TerminalWith, 5)
 
 	// creating  command pallet
-	s.CreateCommandPallet(&palette.CommandPaletteConfig{
-		Width:           screen.TerminalWith,
-		PromptString:    "ecoshub$ ",
-		HistoryCapacity: palette.DefaultHistoryCapacity,
+	s.CreateCommandPallet(&screen.CommandPaletteConfig{
+		Prompt: "ecoshub$ ",
 	})
 
 	// command handler
-	s.CommandPalette.ListenActions(func(a *palette.Action) {
+	s.CommandPalette.ListenActions(func(a *screen.KeyAction) {
 		switch a.Action {
 		// enter event handler
-		case palette.ActionEnter:
+		case screen.KeyActionEnter:
 
 			// append input in to history panel
 			historyPanel.Push(a.Input)
 
-			// also add command pallets own history module to select with arrow keys later
+			// also add command pallets own history module to select with up/down arrow keys later
 			s.CommandPalette.AddToHistory(a.Input)
 
 			// lets add a command
@@ -44,6 +41,9 @@ func main() {
 				historyPanel.Clear()
 				s.CommandPalette.ClearHistory()
 			}
+			s.Render()
+		case screen.KeyActionInnerEvent:
+			s.Render()
 		}
 	})
 
@@ -56,5 +56,7 @@ func main() {
 		PosY: screen.TerminalHeight - 7,
 	})
 
-	s.Run()
+	s.Start()
+
+	select {}
 }

@@ -19,7 +19,7 @@ func (s *Screen) calculateFPS() {
 	copy(s.buffer[0][s.sizeX-1-8:s.sizeX-1], runes[:8])
 }
 
-func ListenInterrupt(interruptFunc func()) {
+func WaitInterrupt(interruptFunc func()) {
 	chanInterrupt := make(chan os.Signal, 1)
 	signal.Notify(chanInterrupt, os.Interrupt)
 	for {

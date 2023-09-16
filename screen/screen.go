@@ -3,7 +3,6 @@ package screen
 import (
 	"time"
 
-	"github.com/ecoshub/termium/palette"
 	"github.com/ecoshub/termium/utils"
 )
 
@@ -27,37 +26,30 @@ type Screen struct {
 	lastRender        time.Time
 	started           bool
 
-	CommandPalette *palette.Command
+	CommandPalette *CommandPalette
 }
 
-func NewScreen() (*Screen, error) {
-	return &Screen{
-		sizeY:             TerminalHeight,
-		sizeX:             TerminalWith,
-		defaultCursorPosX: 0,
-		defaultCursorPosY: TerminalHeight,
-		components:        make([]*Component, 0, 4),
-		buffer:            utils.InitRuneMatrix(TerminalWith, TerminalHeight, ' '),
-	}, nil
-}
-
-func NewDefaultScreen() (*Screen, error) {
-	pc := &palette.CommandPaletteConfig{
-		Width:           TerminalWith,
-		PromptString:    DefaultCommandPalettePrompt,
-		HistoryCapacity: palette.DefaultHistoryCapacity,
+func New(optionalCommandPaletteConfig ...*CommandPaletteConfig) (*Screen, error) {
+	var cfg *CommandPaletteConfig
+	if len(optionalCommandPaletteConfig) == 0 {
+		cfg = &CommandPaletteConfig{
+			Prompt: DefaultCommandPalettePrompt,
+		}
+	} else {
+		cfg = optionalCommandPaletteConfig[0]
 	}
-	cp, err := palette.New(pc)
-	if err != nil {
-		return nil, err
-	}
-	return &Screen{
+	s := &Screen{
 		sizeX:             TerminalWith,
 		sizeY:             TerminalHeight - DefaultCommandPaletteHeight,
 		components:        make([]*Component, 0, 4),
-		CommandPalette:    cp,
 		defaultCursorPosX: DefaultCommandPalettePositionX,
-		defaultCursorPosY: TerminalHeight - DefaultCommandPaletteHeight + len(pc.PromptString) + 1,
+		defaultCursorPosY: TerminalHeight - DefaultCommandPaletteHeight + len(cfg.Prompt) + 1,
 		buffer:            utils.InitRuneMatrix(TerminalWith, TerminalHeight-DefaultCommandPaletteHeight, ' '),
-	}, nil
+	}
+	cp, err := newCommandPalette(cfg, s)
+	if err != nil {
+		return nil, err
+	}
+	s.CommandPalette = cp
+	return s, nil
 }

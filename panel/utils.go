@@ -1,19 +1,19 @@
 package panel
 
 import (
-	"github.com/ecoshub/termium/ansi"
 	"github.com/ecoshub/termium/utils"
 )
 
 func FixedSizeLine(line string, limit int) []rune {
-	line = ansi.Strip(line)
-	if utils.PrintableLen(line) >= limit {
+	// line = ansi.Strip(line)
+	pll := utils.PrintableLen(line)
+	if pll >= limit {
 		line := utils.CutUnicode(line, limit)
 		runes := []rune(line)
 		return runes
 	}
-	delta := limit - utils.PrintableLen(line)
+	delta := limit - pll
 	runes := []rune(line)
-	runes = append(runes, utils.InitRuneArray(delta, ' ')...)
+	runes = append(runes, utils.InitRuneArray(delta, '.')...)
 	return runes
 }

@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"os"
 
-	"github.com/ecoshub/termium/palette"
 	"github.com/ecoshub/termium/panel"
 	"github.com/ecoshub/termium/screen"
 )
@@ -33,20 +32,18 @@ func main() {
 
 func initScreen() {
 	var err error
-	mainScreen, err = screen.NewScreen()
+	mainScreen, err = screen.New()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	// lets create a stack panel to use as a command history
-	results = panel.NewBasic(screen.TerminalWith, 5)
+	results = panel.NewBasicPanel(screen.TerminalWith, 5)
 
 	// creating  command pallet
-	mainScreen.CreateCommandPallet(&palette.CommandPaletteConfig{
-		Width:           screen.TerminalWith,
-		PromptString:    "ecoshub$ ",
-		HistoryCapacity: palette.DefaultHistoryCapacity,
+	mainScreen.CreateCommandPallet(&screen.CommandPaletteConfig{
+		Prompt: "ecoshub$ ",
 	})
 
 	// lets add this panel to top left corner (0,0)

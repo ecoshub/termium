@@ -22,13 +22,12 @@ type Basic struct {
 	lines  []string
 }
 
-func NewBasic(width, height int) *Basic {
-	bp := &Basic{
+func NewBasicPanel(width, height int) *Basic {
+	return &Basic{
 		Config: &Config{Width: width, Height: height},
 		buffer: utils.InitRuneMatrix(width, height, ' '),
 		lines:  make([]string, height),
 	}
-	return bp
 }
 
 func (bp *Basic) Write(index int, line string) error {
@@ -43,7 +42,7 @@ func (bp *Basic) Write(index int, line string) error {
 func (bp *Basic) Clear() {
 	bp.lines = make([]string, bp.Config.Height)
 	bp.buffer = utils.InitRuneMatrix(bp.Config.Width, bp.Config.Height, ' ')
-	bp.renderList()
+	bp.render()
 }
 
 func (bp *Basic) ClearLine(index int) {
@@ -58,7 +57,7 @@ func (bp *Basic) GetBuffer() [][]rune {
 	return bp.buffer
 }
 
-func (bp *Basic) renderList() {
+func (bp *Basic) render() {
 	for i := range bp.lines {
 		bp.renderLine(i)
 	}

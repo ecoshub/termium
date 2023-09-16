@@ -16,16 +16,20 @@ func ClearScreen() {
 	print(EscapeChar + "[2J")
 }
 
+func MakeCursorInvisible() {
+	print(EscapeChar + "[?25l")
+}
+
+func MakeCursorVisible() {
+	print(EscapeChar + "[?25h")
+}
+
 func SaveCursorPos() {
 	print(EscapeChar + "7")
 }
 
 func RestoreCursorPos() {
 	print(EscapeChar + "8")
-}
-
-func ResetAllModes() {
-	print(EscapeChar + "[0m")
 }
 
 func GoLeft(n int) {

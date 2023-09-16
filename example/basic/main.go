@@ -11,14 +11,14 @@ import (
 
 func main() {
 	// create a screen. this is representation of terminal screen
-	s, err := screen.NewScreen()
+	s, err := screen.New()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// lets create a basic panel.
-	testPanel1 := panel.NewBasic(20, 5)
+	testPanel1 := panel.NewBasicPanel(20, 5)
 
 	// a dummy function to add values in to basic panel.
 	// this "panel" variable is your handler to add remove values
@@ -36,4 +36,8 @@ func main() {
 
 	// run the screen
 	s.Run()
+
+	// main thread blocker
+	select {}
+
 }
