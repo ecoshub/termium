@@ -6,10 +6,11 @@ import (
 	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/screen"
+	"github.com/ecoshub/termium/component/style"
 )
 
 func main() {
-	s, err := screen.New(&palette.CommandPaletteConfig{Prompt: ">> ", ForegroundColor: 47})
+	s, err := screen.New(&palette.CommandPaletteConfig{Prompt: ">> ", Style: &style.Style{ForegroundColor: 47}})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -20,10 +21,10 @@ func main() {
 		Height:      10,
 		Title:       "Panel_1:",
 		RenderTitle: true,
-		TitleStyle: &panel.Style{
+		TitleStyle: &style.Style{
 			BackgroundColor: 22,
 		},
-		ContentStyle: &panel.Style{
+		ContentStyle: &style.Style{
 			ForegroundColor: 197,
 		},
 	})
@@ -33,10 +34,10 @@ func main() {
 		Height:      10,
 		Title:       "Panel_2:",
 		RenderTitle: true,
-		TitleStyle: &panel.Style{
+		TitleStyle: &style.Style{
 			BackgroundColor: 95,
 		},
-		ContentStyle: &panel.Style{
+		ContentStyle: &style.Style{
 			ForegroundColor: 227,
 		},
 	})
@@ -46,10 +47,10 @@ func main() {
 		Height:      10,
 		Title:       "Panel_3:",
 		RenderTitle: true,
-		TitleStyle: &panel.Style{
+		TitleStyle: &style.Style{
 			BackgroundColor: 147,
 		},
-		ContentStyle: &panel.Style{
+		ContentStyle: &style.Style{
 			ForegroundColor: 14,
 		},
 	})
@@ -59,10 +60,10 @@ func main() {
 		Height:      10,
 		Title:       "Panel_4:",
 		RenderTitle: true,
-		TitleStyle: &panel.Style{
+		TitleStyle: &style.Style{
 			BackgroundColor: 88,
 		},
-		ContentStyle: &panel.Style{
+		ContentStyle: &style.Style{
 			ForegroundColor: 201,
 		},
 	})

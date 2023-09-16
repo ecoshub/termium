@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/ecoshub/termium/component/history"
+	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 	"github.com/eiannone/keyboard"
@@ -14,9 +15,8 @@ var (
 )
 
 type CommandPaletteConfig struct {
-	Prompt          string
-	ForegroundColor int
-	BackgroundColor int
+	Prompt string
+	Style  *style.Style
 }
 
 type CommandPalette struct {
@@ -121,7 +121,7 @@ func (p *CommandPalette) GetCursorIndex() int {
 
 func (p *CommandPalette) String() string {
 	s := ""
-	prompt := ansi.SetColor(p.Config.Prompt, p.Config.ForegroundColor, p.Config.BackgroundColor)
+	prompt := style.SetStyle(p.Config.Prompt, p.Config.Style)
 	s += prompt
 	if len(p.buffer) != 0 {
 		s += string(p.buffer[p.plp : p.plp+p.bufferSize])

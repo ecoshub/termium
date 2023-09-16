@@ -3,7 +3,7 @@ package screen
 import (
 	"time"
 
-	"github.com/ecoshub/termium/component/panel"
+	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 )
@@ -18,7 +18,7 @@ func (s *Screen) Start() {
 	}
 
 	print(ansi.ClearScreen)
-	s.drawCommandPallet()
+	s.RenderCommandPalette()
 	s.started = true
 	s.Render()
 	utils.WaitInterrupt(nil)
@@ -34,12 +34,12 @@ func (s *Screen) Render() {
 
 	if s.CommandPalette == nil {
 		s.render()
-		s.drawCommandPallet()
+		s.RenderCommandPalette()
 		return
 	}
 
 	s.render()
-	s.drawCommandPallet()
+	s.RenderCommandPalette()
 }
 
 func (s *Screen) render() {
@@ -87,20 +87,20 @@ func (s *Screen) readComponent(c *Component) {
 		// go to title position again to write title
 		ansi.GotoRowAndColumn(c.posY+1, c.posX)
 		line := ansi.ClearLine(panelConfig.Title, sizeX)
-		line = panel.SetStyle(line, panelConfig.TitleStyle)
+		line = style.SetStyle(line, panelConfig.TitleStyle)
 		print(line)
 	}
 
 	for i := 0; i < sizeY; i++ {
 		ansi.GotoRowAndColumn(c.posY+i+offset+1, c.posX)
 		line := ansi.ClearLine(string(buffer[i]), sizeX)
-		line = panel.SetStyle(line, panelConfig.ContentStyle)
+		line = style.SetStyle(line, panelConfig.ContentStyle)
 		print(line)
 	}
 
 }
 
-func (s *Screen) drawCommandPallet() {
+func (s *Screen) RenderCommandPalette() {
 	ansi.GotoRowAndColumn(s.defaultCursorPosY, s.defaultCursorPosX)
 	if s.CommandPalette == nil {
 		return

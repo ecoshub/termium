@@ -44,13 +44,12 @@ func New(optionalCommandPaletteConfig ...*palette.CommandPaletteConfig) (*Screen
 		components:        make([]*Component, 0, 4),
 		defaultCursorPosX: DefaultCommandPalettePositionX,
 		defaultCursorPosY: utils.TerminalHeight - DefaultCommandPaletteHeight + len(cfg.Prompt) + 1,
-		// buffer:            utils.InitRuneTensor(utils.TerminalWith, utils.TerminalHeight-DefaultCommandPaletteHeight, ' '),
 	}
 	cp, err := palette.New(cfg)
 	if err != nil {
 		return nil, err
 	}
 	s.CommandPalette = cp
-	s.CommandPalette.ChangeEvent(func() { s.Render() })
+	s.CommandPalette.ChangeEvent(func() { s.RenderCommandPalette() })
 	return s, nil
 }

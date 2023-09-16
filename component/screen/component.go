@@ -2,6 +2,7 @@ package screen
 
 import (
 	"github.com/ecoshub/termium/component/panel"
+	"github.com/ecoshub/termium/component/style"
 )
 
 type ComponentConfig struct {
@@ -16,7 +17,7 @@ type Component struct {
 }
 
 // ConstantText add constant text to string if you don't want to change colors just enter zeros (0)
-func (s *Screen) ConstantText(posX, posY int, line string, sty *panel.Style) {
+func (s *Screen) ConstantText(posX, posY int, line string, sty *style.Style) {
 	p := panel.ConstantText(line, sty)
 	s.Add(p, posX, posY)
 }

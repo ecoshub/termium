@@ -1,4 +1,4 @@
-package panel
+package style
 
 import (
 	"fmt"
@@ -6,18 +6,27 @@ import (
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
+type Style struct {
+	ForegroundColor int
+	BackgroundColor int
+	Bold            bool
+	Italic          bool
+	Underline       bool
+	Blink           bool
+}
+
 func SetStyle(line string, sty *Style) string {
 	l := ""
-	if sty.SetBold {
+	if sty.Bold {
 		l += ansi.SetBold
 	}
-	if sty.SetItalic {
+	if sty.Italic {
 		l += ansi.SetItalic
 	}
-	if sty.SetUnderline {
+	if sty.Underline {
 		l += ansi.SetUnderline
 	}
-	if sty.SetBlink {
+	if sty.Blink {
 		l += ansi.SetBlink
 	}
 	if sty.ForegroundColor != 0 {

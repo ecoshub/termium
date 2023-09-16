@@ -6,12 +6,13 @@ import (
 	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/screen"
+	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 )
 
 func main() {
 	// create a screen. this is representation of terminal screen
-	s, err := screen.New(&palette.CommandPaletteConfig{Prompt: "~ root# ", ForegroundColor: 227})
+	s, err := screen.New(&palette.CommandPaletteConfig{Prompt: "~ root# ", Style: &style.Style{ForegroundColor: 227}})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -23,11 +24,11 @@ func main() {
 		Height:      5,
 		Title:       "History:",
 		RenderTitle: true,
-		TitleStyle: &panel.Style{
+		TitleStyle: &style.Style{
 			BackgroundColor: 95,
 			ForegroundColor: 103,
-			SetBlink:        true,
-			SetBold:         true,
+			Blink:           true,
+			Bold:            true,
 		},
 	})
 

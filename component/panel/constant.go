@@ -3,10 +3,11 @@ package panel
 import (
 	"strings"
 
+	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
-func ConstantText(line string, sty *Style) *Basic {
+func ConstantText(line string, sty *style.Style) *Basic {
 	line = ansi.Strip(line)
 	line = strings.TrimSpace(line)
 	conf := &Config{
