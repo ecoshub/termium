@@ -3,7 +3,7 @@ package screen
 import (
 	"os"
 
-	"github.com/ecoshub/termium/panel"
+	"github.com/ecoshub/termium/component/panel"
 )
 
 type ComponentConfig struct {
@@ -32,4 +32,5 @@ func (s *Screen) Add(p panel.Panel, sc *ComponentConfig) {
 		os.Exit(1)
 	}
 	s.components = append(s.components, &Component{p: p, conf: sc})
+	p.ChangeHandler(func() { s.Render() })
 }

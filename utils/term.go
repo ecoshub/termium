@@ -1,4 +1,4 @@
-package screen
+package utils
 
 import "golang.org/x/crypto/ssh/terminal"
 

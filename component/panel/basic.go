@@ -3,8 +3,8 @@ package panel
 import (
 	"fmt"
 
-	"github.com/ecoshub/termium/ansi"
 	"github.com/ecoshub/termium/utils"
+	"github.com/ecoshub/termium/utils/ansi"
 )
 
 type Config struct {
@@ -15,12 +15,14 @@ type Config struct {
 type Panel interface {
 	GetSize() (int, int)
 	GetBuffer() [][]rune
+	ChangeHandler(h func())
 }
 
 type Basic struct {
-	Config *Config
-	buffer [][]rune
-	lines  []string
+	Config     *Config
+	buffer     [][]rune
+	lines      []string
+	hasChanged func()
 }
 
 func NewBasicPanel(width, height int) *Basic {
@@ -37,6 +39,7 @@ func (bp *Basic) Write(index int, line string) error {
 	}
 	bp.lines[index] = line
 	bp.renderLine(index)
+	bp.hasChanged()
 	return nil
 }
 
@@ -44,6 +47,7 @@ func (bp *Basic) Clear() {
 	bp.lines = make([]string, bp.Config.Height)
 	bp.buffer = utils.InitRuneMatrix(bp.Config.Width, bp.Config.Height, ' ')
 	bp.render()
+	bp.hasChanged()
 }
 
 func (bp *Basic) ClearLine(index int) {
@@ -58,6 +62,10 @@ func (bp *Basic) GetBuffer() [][]rune {
 	return bp.buffer
 }
 
+func (bp *Basic) ChangeHandler(f func()) {
+	bp.hasChanged = f
+}
+
 func (bp *Basic) render() {
 	for i := range bp.lines {
 		bp.renderLine(i)
@@ -67,6 +75,6 @@ func (bp *Basic) render() {
 func (bp *Basic) renderLine(index int) {
 	line := bp.lines[index]
 	line = ansi.Strip(line)
-	r := FixedSizeLine(line, bp.Config.Width)
+	r := utils.FixedSizeLine(line, bp.Config.Width)
 	bp.buffer[index] = []rune(r)
 }

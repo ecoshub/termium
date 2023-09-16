@@ -1,29 +1,14 @@
 package screen
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
-	"github.com/ecoshub/termium/ansi"
-	"github.com/ecoshub/termium/panel"
+	"github.com/ecoshub/termium/utils"
+	"github.com/ecoshub/termium/utils/ansi"
 )
 
-// Run async run command starts and renders periodically
-func (s *Screen) Run() {
-	s.Start()
-	go s.RenderPeriodically(DefaultRefreshDelay)
-}
-
-func (s *Screen) RenderPeriodically(refreshRate time.Duration) {
-	for range time.NewTicker(refreshRate).C {
-		s.Render()
-	}
-}
-
 func (s *Screen) Start() {
-	defer s.Render()
-
 	if s.started {
 		return
 	}
@@ -32,15 +17,11 @@ func (s *Screen) Start() {
 		panic("no component added to screen")
 	}
 
-	go WaitInterrupt(func() {
-		fmt.Println("Exiting...")
-	})
-
-	ansi.ClearScreen()
-
+	print(ansi.ClearScreen)
 	s.drawCommandPallet()
-
 	s.started = true
+	s.Render()
+	utils.WaitInterrupt(nil)
 }
 
 func (s *Screen) Render() {
@@ -48,8 +29,8 @@ func (s *Screen) Render() {
 		s.lastRender = time.Now()
 	}()
 
-	ansi.MakeCursorInvisible()
-	defer ansi.MakeCursorVisible()
+	print(ansi.MakeCursorInvisible)
+	defer print(ansi.MakeCursorVisible)
 
 	if s.CommandPalette == nil {
 		s.render()
@@ -62,10 +43,10 @@ func (s *Screen) Render() {
 }
 
 func (s *Screen) render() {
-	ansi.SaveCursorPos()
-	defer ansi.RestoreCursorPos()
+	print(ansi.SaveCursorPos)
+	defer print(ansi.RestoreCursorPos)
 
-	ansi.GoToFirstBlock()
+	print(ansi.GoToFirstBlock)
 
 	s.readComponents()
 	print(s.String())
@@ -76,13 +57,12 @@ func (s *Screen) readComponents() {
 	for _, c := range s.components {
 		s.readComponent(c)
 	}
-	s.calculateFPS()
 }
 
 func (s *Screen) readComponent(c *Component) {
 	sizeX, sizeY := c.p.GetSize()
 	buffer := c.p.GetBuffer()
-	title := panel.FixedSizeLine(c.conf.Title, sizeX)
+	title := utils.FixedSizeLine(c.conf.Title, sizeX)
 
 	offset := 0
 	if c.conf.RenderTitle {
@@ -109,13 +89,12 @@ func (s *Screen) String() string {
 }
 
 func (s *Screen) drawCommandPallet() {
-	ansi.Goto(s.defaultCursorPosY, s.defaultCursorPosX)
-	if s.CommandPalette == nil || !s.CommandPalette.Config.Enable {
+	ansi.GotoRowAndColumn(s.defaultCursorPosY, s.defaultCursorPosX)
+	if s.CommandPalette == nil {
 		return
 	}
 
-	ansi.EraseLine()
-	pb := s.CommandPalette.Buffer()
-	print(pb)
-	ansi.Goto(s.defaultCursorPosY, s.CommandPalette.cursorIndex+1)
+	print(ansi.EraseLine)
+	print(s.CommandPalette.String())
+	ansi.GotoRowAndColumn(s.defaultCursorPosY, s.CommandPalette.GetCursorIndex()+1)
 }

@@ -1,18 +1,16 @@
-package screen
+package palette
 
 import (
 	"os"
 
-	"github.com/ecoshub/termium/ansi"
-	"github.com/ecoshub/termium/panel"
 	"github.com/ecoshub/termium/utils"
+	"github.com/ecoshub/termium/utils/ansi"
 )
 
 const (
-	CommandPaletteCommandQuit1        = "q"
-	CommandPaletteCommandQuit2        = "quit"
-	CommandPaletteCommandQuit3        = "exit"
-	CommandPaletteCommandClearHistory = "clr"
+	CommandPaletteCommandQuit1 = "q"
+	CommandPaletteCommandQuit2 = "quit"
+	CommandPaletteCommandQuit3 = "exit"
 )
 
 type ActionCode int
@@ -33,14 +31,14 @@ func newAction(action ActionCode, input string) *KeyAction {
 }
 
 func (p *CommandPalette) keyEnter() {
-	defer p.renderer.Render()
+	defer p.hasChanged()
 
 	if p.bufferSize == 0 {
 		return
 	}
 
 	cmd := string(p.buffer[p.plp : p.plp+p.bufferSize])
-	p.buffer = panel.FixedSizeLine(cmd, TerminalWith)
+	p.buffer = utils.FixedSizeLine(cmd, utils.TerminalWith)
 	p.cursorIndex = p.plp
 	p.bufferSize = 0
 
@@ -49,16 +47,14 @@ func (p *CommandPalette) keyEnter() {
 		CommandPaletteCommandQuit2,
 		CommandPaletteCommandQuit3:
 		os.Exit(0)
-	case CommandPaletteCommandClearHistory:
-		p.ClearHistory()
 	default:
 		p.runActionFunction(KeyActionEnter, cmd)
 	}
 }
 
 func (p *CommandPalette) keySpace() {
-	defer p.renderer.Render()
-	if p.cursorIndex >= TerminalWith {
+	defer p.hasChanged()
+	if p.cursorIndex >= utils.TerminalWith {
 		return
 	}
 	p.buffer[p.cursorIndex] = ' '
@@ -73,18 +69,18 @@ func (p *CommandPalette) keyBackspace() {
 	p.buffer[p.cursorIndex-1] = ' '
 	p.cursorIndex--
 	p.bufferSize--
-	ansi.GoLeft(1)
-	p.renderer.Render()
+	ansi.GoLeftNChar(1)
+	p.hasChanged()
 }
 
 func (p *CommandPalette) keyEsc() {
-	defer p.renderer.Render()
+	defer p.hasChanged()
 	p.runActionFunction(KeyActionEsc, "")
 }
 
 func (p *CommandPalette) keyDefault(char rune) {
-	defer p.renderer.Render()
-	if p.cursorIndex >= TerminalWith {
+	defer p.hasChanged()
+	if p.cursorIndex >= utils.TerminalWith {
 		return
 	}
 	p.buffer[p.cursorIndex] = char
@@ -93,21 +89,28 @@ func (p *CommandPalette) keyDefault(char rune) {
 }
 
 func (p *CommandPalette) keyArrowUp() {
-	defer p.renderer.Render()
+	if p.history.Len() <= 0 {
+		return
+	}
+	defer p.hasChanged()
 	up := p.history.Up()
 	plu := utils.PrintableLen(up)
 	copy(p.buffer[p.plp:p.plp+plu], []rune(up)[:])
-	p.cursorIndex = plu
+	p.cursorIndex = p.plp + plu
 	p.bufferSize = plu
 	p.runActionFunction(KeyActionInnerEvent, up)
 }
 
 func (p *CommandPalette) keyArrowDown() {
-	defer p.renderer.Render()
+	if p.history.Len() <= 0 {
+		return
+	}
+
+	defer p.hasChanged()
 	down := p.history.Down()
 	pld := utils.PrintableLen(down)
 	copy(p.buffer[p.plp:p.plp+pld], []rune(down)[:])
-	p.cursorIndex = pld
+	p.cursorIndex = p.plp + pld
 	p.bufferSize = pld
 	p.runActionFunction(KeyActionInnerEvent, down)
 }
@@ -116,15 +119,15 @@ func (p *CommandPalette) keyArrowLeft() {
 	if p.cursorIndex <= p.plp {
 		return
 	}
-	p.renderer.Render()
+	p.hasChanged()
 	p.cursorIndex--
-	ansi.GoLeft(1)
+	ansi.GoLeftNChar(1)
 }
 
 func (p *CommandPalette) keyArrowRight() {
 	if p.cursorIndex >= p.bufferSize+p.plp {
 		return
 	}
-	ansi.GoRight(1)
+	ansi.GoRightNChar(1)
 	p.cursorIndex++
 }

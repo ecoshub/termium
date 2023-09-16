@@ -44,3 +44,7 @@ func (h *History) Down() string {
 	h.cursor = (h.cursor + 1) % len(h.lines)
 	return h.lines[temp]
 }
+
+func (h *History) Len() int {
+	return len(h.lines)
+}
