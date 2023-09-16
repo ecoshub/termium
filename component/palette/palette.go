@@ -3,9 +3,9 @@ package palette
 import (
 	"os"
 
-	"github.com/ecoshub/termium/component/history"
 	"github.com/ecoshub/termium/component/style"
-	"github.com/ecoshub/termium/utils"
+	"github.com/ecoshub/termium/internal/history"
+	"github.com/ecoshub/termium/internal/line"
 	"github.com/ecoshub/termium/utils/ansi"
 	"github.com/eiannone/keyboard"
 )
@@ -22,14 +22,15 @@ type CommandPaletteConfig struct {
 type CommandPalette struct {
 	Config *CommandPaletteConfig
 
-	cursorIndex int
-	buffer      []rune
-	bufferSize  int
-	history     *history.History
-	keyEvents   <-chan keyboard.KeyEvent
-	actionFunc  func(action *KeyAction)
-	hasChanged  func()
-	plp         int
+	// cursorIndex int
+	// buffer      []rune
+	// bufferSize  int
+	PromptLine *line.Line
+	history    *history.History
+	keyEvents  <-chan keyboard.KeyEvent
+	actionFunc func(action *KeyAction)
+	hasChanged func()
+	plp        int
 }
 
 func New(cpc *CommandPaletteConfig) (*CommandPalette, error) {
@@ -40,12 +41,13 @@ func New(cpc *CommandPaletteConfig) (*CommandPalette, error) {
 
 	cpc.Prompt = ansi.Strip(cpc.Prompt)
 	p := &CommandPalette{
-		Config:      cpc,
-		keyEvents:   keyEvents,
-		history:     history.New(DefaultHistoryCapacity),
-		buffer:      utils.InitRuneArray(utils.TerminalWith, ' '),
-		cursorIndex: len(cpc.Prompt),
-		plp:         len(cpc.Prompt),
+		Config:     cpc,
+		keyEvents:  keyEvents,
+		history:    history.New(DefaultHistoryCapacity),
+		PromptLine: line.New(),
+		// buffer:      utils.InitRuneArray(utils.TerminalWith, ' '),
+		// cursorIndex: len(cpc.Prompt),
+		plp: len(cpc.Prompt),
 	}
 
 	go p.listenKeyEvents()
@@ -111,30 +113,20 @@ func (p *CommandPalette) listenKeyEvents() {
 			default:
 				p.keyDefault(event.Rune)
 			}
+			p.hasChanged()
 		}
 	}
-}
-
-func (p *CommandPalette) GetCursorIndex() int {
-	return p.cursorIndex
 }
 
 func (p *CommandPalette) String() string {
 	s := ""
 	prompt := style.SetStyle(p.Config.Prompt, p.Config.Style)
-	s += prompt
-	if len(p.buffer) != 0 {
-		s += string(p.buffer[p.plp : p.plp+p.bufferSize])
-	}
+	s += prompt + p.PromptLine.String()
 	return s
 }
 
 func (p *CommandPalette) getBuffer() string {
-	plen := len(p.Config.Prompt)
-	if len(p.buffer) == 0 {
-		return p.Config.Prompt
-	}
-	return p.Config.Prompt + string(p.buffer[plen:plen+p.bufferSize])
+	return p.Config.Prompt + p.PromptLine.String()
 }
 
 func (p *CommandPalette) runActionFunction(action ActionCode, input string) {

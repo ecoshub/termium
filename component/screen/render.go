@@ -96,5 +96,5 @@ func (s *Screen) RenderCommandPalette() {
 
 	print(ansi.EraseLine)
 	print(s.CommandPalette.String())
-	ansi.GotoRowAndColumn(s.defaultCursorPosY, s.CommandPalette.GetCursorIndex()+1)
+	ansi.GotoRowAndColumn(s.defaultCursorPosY, len(s.CommandPalette.Config.Prompt)+s.CommandPalette.PromptLine.GetCursorIndex()+1)
 }
