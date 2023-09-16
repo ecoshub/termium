@@ -1,6 +1,7 @@
 package panel
 
 import (
+	"github.com/ecoshub/termium/ansi"
 	"github.com/ecoshub/termium/utils"
 )
 
@@ -45,6 +46,7 @@ func (f *Flat) render() {
 	mat := utils.InitRuneMatrix(f.Config.Width, f.Config.Height, ' ')
 	buff := make([]rune, 0, f.Config.Width)
 	index := 0
+	f.buffer = ansi.Strip(f.buffer)
 	for _, r := range f.buffer {
 		if r == rune('\n') {
 			copy(mat[index], buff[:])

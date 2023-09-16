@@ -9,14 +9,19 @@ import (
 
 func main() {
 	// create a screen. this is representation of terminal screen
-	s, err := screen.New(&screen.CommandPaletteConfig{Prompt: ">          eco$ ", Enable: true})
+	s, err := screen.New(&screen.CommandPaletteConfig{Prompt: "eco$ ", Enable: true})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	sp := panel.NewStackPanel(screen.TerminalWith, 10)
+	sp := panel.NewStackPanel(10, 10)
 	s.Add(sp, &screen.ComponentConfig{})
+
+	sp1 := panel.NewStackPanel(10, 10)
+	s.Add(sp1, &screen.ComponentConfig{PosX: 11})
+
+	selector := 0
 
 	// command handler
 	s.CommandPalette.ListenActions(func(a *screen.KeyAction) {
@@ -33,8 +38,13 @@ func main() {
 				sp.Clear()
 			default:
 				msg := fmt.Sprintf("\x1b[38;5;197m%s\x1b[0m ", a.Input)
-				sp.Push(msg)
+				if selector == 0 {
+					sp.Push(msg)
+				} else {
+					sp1.Push(msg)
+				}
 			}
+			selector = (selector + 1) % 2
 		}
 	})
 

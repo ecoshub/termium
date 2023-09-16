@@ -3,6 +3,7 @@ package panel
 import (
 	"fmt"
 
+	"github.com/ecoshub/termium/ansi"
 	"github.com/ecoshub/termium/utils"
 )
 
@@ -65,6 +66,7 @@ func (bp *Basic) render() {
 
 func (bp *Basic) renderLine(index int) {
 	line := bp.lines[index]
+	line = ansi.Strip(line)
 	r := FixedSizeLine(line, bp.Config.Width)
 	bp.buffer[index] = []rune(r)
 }

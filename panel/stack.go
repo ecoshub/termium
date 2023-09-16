@@ -13,7 +13,7 @@ func NewStackPanel(width, height int) *Stack {
 	return &Stack{
 		Basic: &Basic{
 			Config: &Config{Width: width, Height: height},
-			buffer: utils.InitRuneMatrix(width, height, '.'),
+			buffer: utils.InitRuneMatrix(width, height, ' '),
 			lines:  make([]string, height),
 		},
 	}

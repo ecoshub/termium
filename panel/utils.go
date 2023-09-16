@@ -5,7 +5,6 @@ import (
 )
 
 func FixedSizeLine(line string, limit int) []rune {
-	// line = ansi.Strip(line)
 	pll := utils.PrintableLen(line)
 	if pll >= limit {
 		line := utils.CutUnicode(line, limit)
@@ -14,6 +13,6 @@ func FixedSizeLine(line string, limit int) []rune {
 	}
 	delta := limit - pll
 	runes := []rune(line)
-	runes = append(runes, utils.InitRuneArray(delta, '.')...)
+	runes = append(runes, utils.InitRuneArray(delta, ' ')...)
 	return runes
 }
