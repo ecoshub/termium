@@ -49,8 +49,6 @@ func (s *Screen) render() {
 	print(ansi.GoToFirstBlock)
 
 	s.readComponents()
-	// print(s.String())
-
 }
 
 func (s *Screen) readComponents() {

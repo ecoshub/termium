@@ -25,10 +25,13 @@ func main() {
 		Title:       "History:",
 		RenderTitle: true,
 		TitleStyle: &style.Style{
-			BackgroundColor: 95,
-			ForegroundColor: 103,
+			BackgroundColor: 238,
+			ForegroundColor: 197,
 			Blink:           true,
 			Bold:            true,
+		},
+		ContentStyle: &style.Style{
+			ForegroundColor: 240,
 		},
 	})
 

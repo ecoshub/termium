@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/ecoshub/termium/component/palette"
+	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 )
 
@@ -34,6 +35,7 @@ func New(optionalCommandPaletteConfig ...*palette.CommandPaletteConfig) (*Screen
 	if len(optionalCommandPaletteConfig) == 0 {
 		cfg = &palette.CommandPaletteConfig{
 			Prompt: DefaultCommandPalettePrompt,
+			Style:  &style.Style{},
 		}
 	} else {
 		cfg = optionalCommandPaletteConfig[0]

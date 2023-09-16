@@ -94,6 +94,7 @@ func (bp *Basic) render() {
 	for i := range bp.lines {
 		bp.renderLine(i)
 	}
+	bp.hasChanged()
 }
 
 func (bp *Basic) renderLine(index int) {
