@@ -23,7 +23,6 @@ type Screen struct {
 	sizeX             int
 	sizeY             int
 	components        []*Component
-	buffer            [][]rune
 	lastRender        time.Time
 	started           bool
 
@@ -45,7 +44,7 @@ func New(optionalCommandPaletteConfig ...*palette.CommandPaletteConfig) (*Screen
 		components:        make([]*Component, 0, 4),
 		defaultCursorPosX: DefaultCommandPalettePositionX,
 		defaultCursorPosY: utils.TerminalHeight - DefaultCommandPaletteHeight + len(cfg.Prompt) + 1,
-		buffer:            utils.InitRuneMatrix(utils.TerminalWith, utils.TerminalHeight-DefaultCommandPaletteHeight, ' '),
+		// buffer:            utils.InitRuneTensor(utils.TerminalWith, utils.TerminalHeight-DefaultCommandPaletteHeight, ' '),
 	}
 	cp, err := palette.New(cfg)
 	if err != nil {

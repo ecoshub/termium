@@ -130,7 +130,7 @@ func (p *CommandPalette) String() string {
 }
 
 func (p *CommandPalette) getBuffer() string {
-	plen := utils.PrintableLen(p.Config.Prompt)
+	plen := len(p.Config.Prompt)
 	if len(p.buffer) == 0 {
 		return p.Config.Prompt
 	}

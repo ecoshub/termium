@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 	"strings"
-	"unicode"
 )
 
 func InitRuneMatrix(x, y int, char rune) [][]rune {
@@ -24,16 +23,6 @@ func InitRuneArray(size int, char rune) []rune {
 	return sl
 }
 
-func PrintableLen(line string) int {
-	c := 0
-	for _, r := range line {
-		if unicode.IsPrint(r) {
-			c++
-		}
-	}
-	return c
-}
-
 func CutUnicode(line string, limit int) string {
 	s := strings.Builder{}
 	c := 0
@@ -48,7 +37,7 @@ func CutUnicode(line string, limit int) string {
 }
 
 func FixedSizeLine(line string, limit int) []rune {
-	pll := PrintableLen(line)
+	pll := len(line)
 	if pll >= limit {
 		line := CutUnicode(line, limit)
 		runes := []rune(line)

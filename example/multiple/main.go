@@ -16,11 +16,26 @@ func main() {
 		return
 	}
 
-	sp := panel.NewStackPanel(10, 10)
-	s.Add(sp, &screen.ComponentConfig{})
+	sp := panel.NewStackPanel(&panel.Config{
+		Width:                10,
+		Height:               10,
+		Title:                "Panel_1:",
+		RenderTitle:          true,
+		TitleBackgroundColor: 22,
+		ForegroundColor:      197,
+	})
+	s.Add(sp, 0, 0)
 
-	sp1 := panel.NewStackPanel(10, 10)
-	s.Add(sp1, &screen.ComponentConfig{PosX: 11})
+	sp1 := panel.NewStackPanel(&panel.Config{
+		Width:                10,
+		Height:               10,
+		Title:                "Panel_2:",
+		RenderTitle:          true,
+		TitleBackgroundColor: 95,
+		ForegroundColor:      227,
+	})
+
+	s.Add(sp1, 11, 0)
 
 	s.CommandPalette.ListenKeyEventEnter(func(input string) {
 		switch input {
@@ -36,6 +51,7 @@ func main() {
 				}
 				sp1.Push(word)
 			}
+			s.CommandPalette.AddToHistory(input)
 		}
 	})
 

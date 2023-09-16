@@ -94,7 +94,7 @@ func (p *CommandPalette) keyArrowUp() {
 	}
 	defer p.hasChanged()
 	up := p.history.Up()
-	plu := utils.PrintableLen(up)
+	plu := len(up)
 	copy(p.buffer[p.plp:p.plp+plu], []rune(up)[:])
 	p.cursorIndex = p.plp + plu
 	p.bufferSize = plu
@@ -108,7 +108,7 @@ func (p *CommandPalette) keyArrowDown() {
 
 	defer p.hasChanged()
 	down := p.history.Down()
-	pld := utils.PrintableLen(down)
+	pld := len(down)
 	copy(p.buffer[p.plp:p.plp+pld], []rune(down)[:])
 	p.cursorIndex = p.plp + pld
 	p.bufferSize = pld
@@ -119,15 +119,16 @@ func (p *CommandPalette) keyArrowLeft() {
 	if p.cursorIndex <= p.plp {
 		return
 	}
-	p.hasChanged()
+	print(ansi.GoLeftOneChar)
 	p.cursorIndex--
-	ansi.GoLeftNChar(1)
+	p.hasChanged()
 }
 
 func (p *CommandPalette) keyArrowRight() {
 	if p.cursorIndex >= p.bufferSize+p.plp {
 		return
 	}
-	ansi.GoRightNChar(1)
+	print(ansi.GoRightOneChar)
 	p.cursorIndex++
+	p.hasChanged()
 }

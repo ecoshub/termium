@@ -17,7 +17,10 @@ func main() {
 	}
 
 	// lets create a basic panel.
-	testPanel1 := panel.NewBasicPanel(100, 10)
+	testPanel1 := panel.NewBasicPanel(&panel.Config{
+		Width:  100,
+		Height: 10,
+	})
 
 	// a dummy function to add values in to basic panel.
 	// this "panel" variable is your handler to add remove values
@@ -31,7 +34,7 @@ func main() {
 	}()
 
 	// lets add this panel to top left corner (0,0)
-	s.Add(testPanel1, &screen.ComponentConfig{PosX: 0, PosY: 0})
+	s.Add(testPanel1, 0, 0)
 
 	// run the screen
 	s.Start()

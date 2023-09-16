@@ -1,26 +1,19 @@
 package panel
 
-import (
-	"github.com/ecoshub/termium/utils"
-)
-
 type Stack struct {
 	*Basic
 	index int
 }
 
-func NewStackPanel(width, height int) *Stack {
+func NewStackPanel(conf *Config) *Stack {
+	b := NewBasicPanel(conf)
 	return &Stack{
-		Basic: &Basic{
-			Config: &Config{Width: width, Height: height},
-			buffer: utils.InitRuneMatrix(width, height, ' '),
-			lines:  make([]string, height),
-		},
+		Basic: b,
 	}
 }
 
 func (sp *Stack) Push(line string) {
-	if sp.index >= sp.Config.Height {
+	if sp.index >= sp.height {
 		sp.lines = sp.lines[1:]
 		sp.lines = append(sp.lines, line)
 	} else {

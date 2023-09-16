@@ -18,7 +18,21 @@ func main() {
 	}
 
 	// lets create a stack panel to use as a command history
-	historyPanel := panel.NewStackPanel(utils.TerminalWith, 5)
+	historyPanel := panel.NewStackPanel(&panel.Config{
+		Width:                utils.TerminalWith,
+		Height:               5,
+		Title:                "History:",
+		RenderTitle:          true,
+		TitleBackgroundColor: 95,
+		ForegroundColor:      197,
+	})
+
+	posX := 0
+	// 7 is panel height (5) + terminal height(1) + history panel title(1)
+	posY := utils.TerminalHeight - 7
+
+	// lets add this panel to top left corner (0,0)
+	s.Add(historyPanel, posX, posY)
 
 	// command handler
 	s.CommandPalette.ListenKeyEventEnter(func(input string) {
@@ -36,15 +50,6 @@ func main() {
 
 		// append input in to history panel
 		historyPanel.Push(input)
-	})
-
-	// lets add this panel to top left corner (0,0)
-	s.Add(historyPanel, &screen.ComponentConfig{
-		Title:       "History:",
-		RenderTitle: true,
-		PosX:        0,
-		// 7 is panel height (5) + terminal height(1) + history panel title(1)
-		PosY: utils.TerminalHeight - 7,
 	})
 
 	s.Start()

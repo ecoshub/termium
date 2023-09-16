@@ -1,36 +1,34 @@
 package screen
 
 import (
-	"os"
-
 	"github.com/ecoshub/termium/component/panel"
 )
 
 type ComponentConfig struct {
-	Title       string
-	RenderTitle bool
-	PosX        int
-	PosY        int
+	PosX int
+	PosY int
 }
 
 type Component struct {
+	posX int
+	posY int
 	p    panel.Panel
-	conf *ComponentConfig
 }
 
-func (s *Screen) ConstantText(posX, posY int, line string) {
-	p := panel.ConstantText(line)
-	s.Add(p, &ComponentConfig{PosX: posX, PosY: posY})
+// ConstantText add constant text to string if you don't want to change colors just enter zeros (0)
+func (s *Screen) ConstantText(posX, posY int, line string, foregroundColor, backgroundColor int) {
+	p := panel.ConstantText(line, foregroundColor, backgroundColor)
+	s.Add(p, posX, posY)
 }
 
-func (s *Screen) Add(p panel.Panel, sc *ComponentConfig) {
+func (s *Screen) Add(p panel.Panel, posX, posY int) {
 	pSizeX, pSizeY := p.GetSize()
-	if sc.PosX+pSizeX > s.sizeX {
-		os.Exit(1)
+	if posX+pSizeX > s.sizeX {
+		panic("panel width exceeds current windows")
 	}
-	if sc.PosY+pSizeY > s.sizeY {
-		os.Exit(1)
+	if posY+pSizeY > s.sizeY {
+		panic("panel height exceeds current windows")
 	}
-	s.components = append(s.components, &Component{p: p, conf: sc})
+	s.components = append(s.components, &Component{p: p, posX: posX, posY: posY})
 	p.ChangeHandler(func() { s.Render() })
 }

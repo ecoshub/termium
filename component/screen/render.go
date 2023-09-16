@@ -49,7 +49,7 @@ func (s *Screen) render() {
 	print(ansi.GoToFirstBlock)
 
 	s.readComponents()
-	print(s.String())
+	// print(s.String())
 
 }
 
@@ -62,30 +62,48 @@ func (s *Screen) readComponents() {
 func (s *Screen) readComponent(c *Component) {
 	sizeX, sizeY := c.p.GetSize()
 	buffer := c.p.GetBuffer()
-	title := utils.FixedSizeLine(c.conf.Title, sizeX)
+	panelConfig := c.p.GetConfig()
 
 	offset := 0
-	if c.conf.RenderTitle {
-		// render title
-		copy(s.buffer[c.conf.PosY][c.conf.PosX:c.conf.PosX+sizeX], title[:sizeX])
-		offset += 1
+	// render the title
+	if panelConfig.RenderTitle {
+		offset = 1
 	}
 
-	// render component
-	for i := 0; i < sizeY; i++ {
-		copy(s.buffer[i+c.conf.PosY+offset][c.conf.PosX:c.conf.PosX+sizeX], buffer[i][:sizeX])
+	// Clear before write component buffer
+	for i := 0; i < sizeY+offset; i++ {
+		ansi.GotoRowAndColumn(c.posY+i+1, c.posX)
+		blank := utils.FixedSizeLine("", sizeX)
+		print(string(blank))
 	}
 
-}
+	// render the title
+	if panelConfig.RenderTitle {
+		// go to title position and clear
+		ansi.GotoRowAndColumn(c.posY+1, c.posX)
+		blank := utils.FixedSizeLine("", sizeX)
+		print(string(blank))
 
-func (s *Screen) String() string {
-	builder := strings.Builder{}
-	for i := range s.buffer {
-		for j := range s.buffer[i] {
-			builder.WriteRune(s.buffer[i][j])
+		// go to title position again to write title
+		ansi.GotoRowAndColumn(c.posY+1, c.posX)
+		line := ansi.Strip(panelConfig.Title)
+		line = strings.TrimSpace(line)
+		if len(line) > sizeX {
+			line = line[:sizeX]
 		}
+		print(ansi.SetColor(line, panelConfig.TitleForegroundColor, panelConfig.TitleBackgroundColor))
 	}
-	return builder.String()
+
+	for i := 0; i < sizeY; i++ {
+		ansi.GotoRowAndColumn(c.posY+i+offset+1, c.posX)
+		line := ansi.Strip(string(buffer[i]))
+		line = strings.TrimSpace(line)
+		if len(line) > sizeX {
+			line = line[:sizeX]
+		}
+		print(ansi.SetColor(line, panelConfig.ForegroundColor, panelConfig.BackgroundColor))
+	}
+
 }
 
 func (s *Screen) drawCommandPallet() {

@@ -1,7 +1,6 @@
 package panel
 
 import (
-	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
@@ -11,11 +10,9 @@ type Flat struct {
 }
 
 func NewFlatPanel(conf *Config) *Flat {
+	b := NewBasicPanel(conf)
 	return &Flat{
-		Basic: &Basic{
-			Config: conf,
-			buffer: utils.InitRuneMatrix(conf.Width, conf.Height, ' '),
-		},
+		Basic: b,
 	}
 }
 
@@ -35,8 +32,8 @@ func (f *Flat) Clear() {
 	f.hasChanged()
 }
 
-func (f *Flat) GetBuffer() [][]rune {
-	return f.buffer
+func (f *Flat) GetBuffer() []string {
+	return f.lines
 }
 
 func (f *Flat) GetSize() (int, int) {
@@ -44,26 +41,28 @@ func (f *Flat) GetSize() (int, int) {
 }
 
 func (f *Flat) render() {
-	mat := utils.InitRuneMatrix(f.Config.Width, f.Config.Height, ' ')
-	buff := make([]rune, 0, f.Config.Width)
-	index := 0
 	f.text = ansi.Strip(f.text)
+
+	lines := make([]string, f.height)
+	index := 0
+	s := ""
 	for _, r := range f.text {
 		if r == rune('\n') {
-			copy(mat[index], buff[:])
-			buff = make([]rune, 0, f.Config.Width)
+			lines[index] = s
+			s = ""
 			index++
 			continue
 		}
-		buff = append(buff, r)
-		if utils.PrintableLen(string(buff)) == f.Config.Width {
-			copy(mat[index][:f.Config.Width], buff[:f.Config.Width])
-			buff = make([]rune, 0, f.Config.Width)
+		s += string(r)
+		if len(s) == f.Config.Width {
+			s = s[:f.Config.Width]
+			lines[index] = s
+			s = ""
 			index++
 		}
-		if index >= f.Config.Height {
+		if index >= f.height {
 			break
 		}
 	}
-	f.buffer = mat
+	f.lines = lines
 }
