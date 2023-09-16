@@ -65,18 +65,6 @@ func (s *Screen) readComponent(c *Component) {
 	offset := 0
 	// render the title
 	if panelConfig.RenderTitle {
-		offset = 1
-	}
-
-	// Clear before write component buffer
-	for i := 0; i < sizeY+offset; i++ {
-		ansi.GotoRowAndColumn(c.posY+i+1, c.posX)
-		blank := utils.FixedSizeLine("", sizeX)
-		print(string(blank))
-	}
-
-	// render the title
-	if panelConfig.RenderTitle {
 		// go to title position and clear
 		ansi.GotoRowAndColumn(c.posY+1, c.posX)
 		blank := utils.FixedSizeLine("", sizeX)
@@ -87,11 +75,13 @@ func (s *Screen) readComponent(c *Component) {
 		line := ansi.ClearLine(panelConfig.Title, sizeX)
 		line = style.SetStyle(line, panelConfig.TitleStyle)
 		print(line)
+		offset = 1
 	}
 
 	for i := 0; i < sizeY; i++ {
 		ansi.GotoRowAndColumn(c.posY+i+offset+1, c.posX)
 		line := ansi.ClearLine(string(buffer[i]), sizeX)
+		line = string(utils.FixedSizeLine(line, sizeX))
 		line = style.SetStyle(line, panelConfig.ContentStyle)
 		print(line)
 	}
