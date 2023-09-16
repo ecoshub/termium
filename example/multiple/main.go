@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/panel"
@@ -17,17 +16,16 @@ func main() {
 	}
 
 	sp := panel.NewStackPanel(&panel.Config{
-		Width:                10,
+		Width:                20,
 		Height:               10,
 		Title:                "Panel_1:",
 		RenderTitle:          true,
 		TitleBackgroundColor: 22,
 		ForegroundColor:      197,
 	})
-	s.Add(sp, 0, 0)
 
 	sp1 := panel.NewStackPanel(&panel.Config{
-		Width:                10,
+		Width:                20,
 		Height:               10,
 		Title:                "Panel_2:",
 		RenderTitle:          true,
@@ -35,7 +33,28 @@ func main() {
 		ForegroundColor:      227,
 	})
 
-	s.Add(sp1, 11, 0)
+	sp2 := panel.NewStackPanel(&panel.Config{
+		Width:                20,
+		Height:               10,
+		Title:                "Panel_3:",
+		RenderTitle:          true,
+		TitleBackgroundColor: 147,
+		ForegroundColor:      14,
+	})
+
+	sp3 := panel.NewStackPanel(&panel.Config{
+		Width:                20,
+		Height:               10,
+		Title:                "Panel_4:",
+		RenderTitle:          true,
+		TitleBackgroundColor: 88,
+		ForegroundColor:      201,
+	})
+
+	s.Add(sp, 0, 0)
+	s.Add(sp1, 22, 0)
+	s.Add(sp2, 22, 11)
+	s.Add(sp3, 0, 11)
 
 	s.CommandPalette.ListenKeyEventEnter(func(input string) {
 		switch input {
@@ -43,14 +62,10 @@ func main() {
 			sp.Clear()
 			sp1.Clear()
 		default:
-			tokens := strings.Split(input, " ")
-			for i, word := range tokens {
-				if i%2 == 0 {
-					sp.Push(word)
-					continue
-				}
-				sp1.Push(word)
-			}
+			sp.Push(input)
+			sp1.Push(input)
+			sp2.Push(input)
+			sp3.Push(input)
 			s.CommandPalette.AddToHistory(input)
 		}
 	})

@@ -99,7 +99,10 @@ func (s *Screen) readComponent(c *Component) {
 		line := ansi.Strip(string(buffer[i]))
 		line = strings.TrimSpace(line)
 		if len(line) > sizeX {
-			line = line[:sizeX]
+			r := []rune(line)
+			r = r[:sizeX-3]
+			line = string(r)
+			line += "..."
 		}
 		print(ansi.SetColor(line, panelConfig.ForegroundColor, panelConfig.BackgroundColor))
 	}

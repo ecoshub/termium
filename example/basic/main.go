@@ -2,41 +2,51 @@ package main
 
 import (
 	"fmt"
-	"time"
 
+	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/screen"
+	"github.com/ecoshub/termium/utils"
 )
 
 func main() {
 	// create a screen. this is representation of terminal screen
-	s, err := screen.New()
+	s, err := screen.New(&palette.CommandPaletteConfig{Prompt: "~ root# ", ForegroundColor: 227})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// lets create a basic panel.
-	testPanel1 := panel.NewBasicPanel(&panel.Config{
-		Width:  100,
-		Height: 10,
+	// lets create a stack panel to use as a command history
+	historyPanel := panel.NewStackPanel(&panel.Config{
+		Width:                utils.TerminalWith,
+		Height:               5,
+		Title:                "History:",
+		RenderTitle:          true,
+		TitleBackgroundColor: 95,
+		ForegroundColor:      103,
 	})
 
-	// a dummy function to add values in to basic panel.
-	// this "panel" variable is your handler to add remove values
-	go func() {
-		count := 1
-		for range time.NewTicker(time.Millisecond * 250).C {
-			i := count % 10
-			testPanel1.Write(i, fmt.Sprintf("this is %d. hello message.......................", count))
-			count++
-		}
-	}()
-
 	// lets add this panel to top left corner (0,0)
-	s.Add(testPanel1, 0, 0)
+	s.Add(historyPanel, 0, utils.TerminalHeight-7)
 
-	// run the screen
+	// command handler
+	s.CommandPalette.ListenKeyEventEnter(func(input string) {
+
+		// also add command pallets own history module to select with up/down arrow keys later
+		s.CommandPalette.AddToHistory(input)
+
+		// lets add a command
+		// if command is clear. clear the history pallet
+		if input == "clear" {
+			historyPanel.Clear()
+			s.CommandPalette.ClearHistory()
+			return
+		}
+
+		// append input in to history panel
+		historyPanel.Push(input)
+	})
+
 	s.Start()
-
 }
