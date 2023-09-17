@@ -6,6 +6,19 @@ import (
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
+var (
+	DefaultStyleInfo *Style = &Style{
+		ForegroundColor: 228,
+		Italic:          true,
+	}
+	DefaultStyleWarning *Style = &Style{
+		ForegroundColor: 209,
+	}
+	DefaultStyleError *Style = &Style{
+		ForegroundColor: 197,
+	}
+)
+
 type Style struct {
 	ForegroundColor int
 	BackgroundColor int

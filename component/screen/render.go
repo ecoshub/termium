@@ -75,9 +75,9 @@ func (r *Renderer) readComponent(index int) {
 
 	for i := 0; i < sizeY; i++ {
 		ansi.GotoRowAndColumn(c.posY+i+offset+1, c.posX)
-		line := ansi.ClearLine(string(buffer[i]), sizeX)
+		line := ansi.ClearLine(string(buffer[i].Line), sizeX)
 		line = string(utils.FixedSizeLine(line, sizeX))
-		line = style.SetStyle(line, panelConfig.ContentStyle)
+		line = style.SetStyle(line, buffer[i].Style)
 		print(line)
 	}
 

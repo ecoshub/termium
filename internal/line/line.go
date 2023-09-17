@@ -32,7 +32,7 @@ func (l *Line) Backspace() {
 }
 
 func (l *Line) Append(char rune) {
-	if l.index >= l.width {
+	if l.cap >= l.width {
 		return
 	}
 	if l.index == l.cap {

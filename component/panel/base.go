@@ -7,6 +7,19 @@ import (
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
+type Line struct {
+	Line  string
+	Style *style.Style
+}
+
+func NewLines(size int) []*Line {
+	lines := make([]*Line, size)
+	for i := range lines {
+		lines[i] = &Line{Line: "", Style: &style.Style{}}
+	}
+	return lines
+}
+
 type Config struct {
 	Width        int
 	Height       int
@@ -16,16 +29,15 @@ type Config struct {
 	ContentStyle *style.Style
 }
 
-type Basic struct {
-	Config *Config
-
+type Base struct {
+	Config     *Config
 	width      int
 	height     int
-	lines      []string
+	lines      []*Line
 	hasChanged func()
 }
 
-func NewBasicPanel(conf *Config) *Basic {
+func NewBasicPanel(conf *Config) *Base {
 	if conf.Height < 1 {
 		panic("panels height can not be less than 1 row")
 	}
@@ -39,63 +51,63 @@ func NewBasicPanel(conf *Config) *Basic {
 	if conf.TitleStyle == nil {
 		conf.TitleStyle = &style.Style{}
 	}
-	return &Basic{
+	return &Base{
 		width:      conf.Width,
 		height:     height,
 		Config:     conf,
-		lines:      make([]string, height),
+		lines:      NewLines(height),
 		hasChanged: func() {},
 	}
 }
 
-func (bp *Basic) Write(index int, line string) error {
+func (bp *Base) Write(index int, line string) error {
 	if index >= (bp.height) {
 		return fmt.Errorf("index out of range. index: %d, size: %d", index, bp.height)
 	}
-	bp.lines[index] = line
+	bp.lines[index] = &Line{Line: "", Style: &style.Style{}}
 	bp.renderLine(index)
 	bp.hasChanged()
 	return nil
 }
 
-func (bp *Basic) Clear() {
-	bp.lines = make([]string, bp.height)
+func (bp *Base) Clear() {
+	bp.lines = NewLines(bp.height)
 	bp.render()
 	bp.hasChanged()
 }
 
-func (bp *Basic) ClearLine(index int) {
-	bp.lines[index] = ""
+func (bp *Base) ClearLine(index int) {
+	bp.lines[index] = &Line{Line: "", Style: &style.Style{}}
 }
 
-func (bp *Basic) GetSize() (int, int) {
+func (bp *Base) GetSize() (int, int) {
 	return bp.width, bp.height
 }
 
-func (bp *Basic) GetBuffer() []string {
+func (bp *Base) GetBuffer() []*Line {
 	return bp.lines
 }
 
-func (bp *Basic) ChangeHandler(f func()) {
+func (bp *Base) ChangeHandler(f func()) {
 	if f == nil {
 		return
 	}
 	bp.hasChanged = f
 }
 
-func (bp *Basic) GetConfig() *Config {
+func (bp *Base) GetConfig() *Config {
 	return bp.Config
 }
 
-func (bp *Basic) render() {
+func (bp *Base) render() {
 	for i := range bp.lines {
 		bp.renderLine(i)
 	}
 	bp.hasChanged()
 }
 
-func (bp *Basic) renderLine(index int) {
+func (bp *Base) renderLine(index int) {
 	line := bp.lines[index]
-	line = ansi.Strip(line)
+	line.Line = ansi.Strip(line.Line)
 	bp.lines[index] = line
 }

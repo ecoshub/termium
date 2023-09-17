@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/panel"
@@ -16,7 +17,7 @@ func main() {
 		CommandPaletteConfig: &palette.Config{
 			Prompt: "~ root# ",
 			Style: &style.Style{
-				ForegroundColor: 227,
+				ForegroundColor: 83,
 			},
 		},
 	})
@@ -43,6 +44,24 @@ func main() {
 
 		// also add command pallets own history module to select with up/down arrow keys later
 		s.CommandPalette.AddToHistory(input)
+
+		if strings.HasPrefix(input, "*") {
+			input = strings.TrimPrefix(input, "*")
+			historyPanel.Push(input, style.DefaultStyleInfo)
+			return
+		}
+
+		if strings.HasPrefix(input, "?") {
+			input = strings.TrimPrefix(input, "?")
+			historyPanel.Push(input, style.DefaultStyleWarning)
+			return
+		}
+
+		if strings.HasPrefix(input, "!") {
+			input = strings.TrimPrefix(input, "!")
+			historyPanel.Push(input, style.DefaultStyleError)
+			return
+		}
 
 		// lets add a command
 		// if command is clear. clear the history pallet

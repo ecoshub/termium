@@ -7,7 +7,7 @@ import (
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
-func ConstantText(line string, sty *style.Style) *Basic {
+func ConstantText(line string, sty *style.Style) *Base {
 	line = ansi.Strip(line)
 	line = strings.TrimSpace(line)
 	conf := &Config{
@@ -18,6 +18,5 @@ func ConstantText(line string, sty *style.Style) *Basic {
 	}
 	bp := NewBasicPanel(conf)
 	bp.Write(0, line)
-	bp.hasChanged()
 	return bp
 }
