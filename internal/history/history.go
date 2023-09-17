@@ -1,5 +1,9 @@
 package history
 
+var (
+	DefaultCapacity = 50
+)
+
 type History struct {
 	capacity int
 	index    int

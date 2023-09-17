@@ -10,7 +10,14 @@ import (
 )
 
 func main() {
-	s, err := screen.New(&palette.CommandPaletteConfig{Prompt: ">> ", Style: &style.Style{ForegroundColor: 47}})
+	s, err := screen.New(&screen.Config{
+		CommandPaletteConfig: &palette.Config{
+			Prompt: ">> ",
+			Style: &style.Style{
+				ForegroundColor: 47,
+			},
+		},
+	})
 	if err != nil {
 		fmt.Println(err)
 		return

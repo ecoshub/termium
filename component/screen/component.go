@@ -3,6 +3,11 @@ package screen
 import (
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/style"
+	"github.com/ecoshub/termium/utils"
+)
+
+const (
+	DefaultCommandPalettePrompt string = ">> "
 )
 
 type ComponentConfig struct {
@@ -24,12 +29,14 @@ func (s *Screen) ConstantText(posX, posY int, line string, sty *style.Style) {
 
 func (s *Screen) Add(p panel.Panel, posX, posY int) {
 	pSizeX, pSizeY := p.GetSize()
-	if posX+pSizeX > s.sizeX {
+	if posX+pSizeX > utils.TerminalWith {
 		panic("panel width exceeds current windows")
 	}
-	if posY+pSizeY > s.sizeY {
+	if posY+pSizeY > utils.TerminalHeight {
 		panic("panel height exceeds current windows")
 	}
-	s.components = append(s.components, &Component{p: p, posX: posX, posY: posY})
-	p.ChangeHandler(func() { s.Render() })
+
+	s.renderer.components = append(s.renderer.components, &Component{p: p, posX: posX, posY: posY})
+
+	p.ChangeHandler(func() { s.renderer.Render() })
 }

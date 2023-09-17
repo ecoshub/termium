@@ -6,70 +6,59 @@ import (
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/internal/history"
 	"github.com/ecoshub/termium/internal/line"
+	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 	"github.com/eiannone/keyboard"
 )
 
-var (
-	DefaultHistoryCapacity = 10
-)
-
-type CommandPaletteConfig struct {
+type Config struct {
 	Prompt string
 	Style  *style.Style
 }
 
-type CommandPalette struct {
-	Config *CommandPaletteConfig
-
-	// cursorIndex int
-	// buffer      []rune
-	// bufferSize  int
+type Palette struct {
+	Config     *Config
 	PromptLine *line.Line
 	history    *history.History
 	keyEvents  <-chan keyboard.KeyEvent
 	actionFunc func(action *KeyAction)
 	hasChanged func()
-	plp        int
 }
 
-func New(cpc *CommandPaletteConfig) (*CommandPalette, error) {
+func New(cpc *Config) (*Palette, error) {
 	keyEvents, err := keyboard.GetKeys(3)
 	if err != nil {
 		return nil, err
 	}
 
 	cpc.Prompt = ansi.Strip(cpc.Prompt)
-	p := &CommandPalette{
+	p := &Palette{
 		Config:     cpc,
 		keyEvents:  keyEvents,
-		history:    history.New(DefaultHistoryCapacity),
-		PromptLine: line.New(),
-		// buffer:      utils.InitRuneArray(utils.TerminalWith, ' '),
-		// cursorIndex: len(cpc.Prompt),
-		plp: len(cpc.Prompt),
+		history:    history.New(history.DefaultCapacity),
+		PromptLine: line.New(utils.TerminalWith - len(cpc.Prompt)),
 	}
 
 	go p.listenKeyEvents()
 	return p, nil
 }
 
-func (p *CommandPalette) ClearHistory() {
+func (p *Palette) ClearHistory() {
 	p.history.Clear()
 }
 
-func (p *CommandPalette) AddToHistory(line string) {
+func (p *Palette) AddToHistory(line string) {
 	p.history.Add(line)
 }
 
-func (p *CommandPalette) ChangeEvent(f func()) {
+func (p *Palette) ChangeEvent(f func()) {
 	if f == nil {
 		return
 	}
 	p.hasChanged = f
 }
 
-func (p *CommandPalette) ListenKeyEventEnter(f func(input string)) {
+func (p *Palette) ListenKeyEventEnter(f func(input string)) {
 	if f == nil {
 		return
 	}
@@ -80,14 +69,14 @@ func (p *CommandPalette) ListenKeyEventEnter(f func(input string)) {
 	}
 }
 
-func (p *CommandPalette) listenActions(f func(action *KeyAction)) {
+func (p *Palette) listenActions(f func(action *KeyAction)) {
 	if f == nil {
 		return
 	}
 	p.actionFunc = f
 }
 
-func (p *CommandPalette) listenKeyEvents() {
+func (p *Palette) listenKeyEvents() {
 	for {
 		select {
 		case event := <-p.keyEvents:
@@ -118,18 +107,17 @@ func (p *CommandPalette) listenKeyEvents() {
 	}
 }
 
-func (p *CommandPalette) String() string {
-	s := ""
-	prompt := style.SetStyle(p.Config.Prompt, p.Config.Style)
-	s += prompt + p.PromptLine.String()
+func (p *Palette) String() string {
+	s := style.SetStyle(p.Config.Prompt, p.Config.Style)
+	s += p.PromptLine.String()
 	return s
 }
 
-func (p *CommandPalette) getBuffer() string {
+func (p *Palette) getBuffer() string {
 	return p.Config.Prompt + p.PromptLine.String()
 }
 
-func (p *CommandPalette) runActionFunction(action ActionCode, input string) {
+func (p *Palette) runActionFunction(action ActionCode, input string) {
 	if p.actionFunc == nil {
 		return
 	}

@@ -12,7 +12,14 @@ import (
 
 func main() {
 	// create a screen. this is representation of terminal screen
-	s, err := screen.New(&palette.CommandPaletteConfig{Prompt: "~ root# ", Style: &style.Style{ForegroundColor: 227}})
+	s, err := screen.New(&screen.Config{
+		CommandPaletteConfig: &palette.Config{
+			Prompt: "~ root# ",
+			Style: &style.Style{
+				ForegroundColor: 227,
+			},
+		},
+	})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -20,23 +27,16 @@ func main() {
 
 	// lets create a stack panel to use as a command history
 	historyPanel := panel.NewStackPanel(&panel.Config{
-		Width:       utils.TerminalWith,
-		Height:      5,
-		Title:       "History:",
-		RenderTitle: true,
-		TitleStyle: &style.Style{
-			BackgroundColor: 238,
-			ForegroundColor: 197,
-			Blink:           true,
-			Bold:            true,
-		},
+		Width:  100,
+		Height: utils.TerminalHeight - 2,
+		Title:  "History:",
 		ContentStyle: &style.Style{
-			ForegroundColor: 240,
+			ForegroundColor: 195,
 		},
 	})
 
 	// lets add this panel to top left corner (0,0)
-	s.Add(historyPanel, 0, utils.TerminalHeight-7)
+	s.Add(historyPanel, 0, 0)
 
 	// command handler
 	s.CommandPalette.ListenKeyEventEnter(func(input string) {
@@ -49,6 +49,7 @@ func main() {
 		if input == "clear" {
 			historyPanel.Clear()
 			s.CommandPalette.ClearHistory()
+			s.ResetScreen()
 			return
 		}
 

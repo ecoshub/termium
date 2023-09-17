@@ -1,8 +1,6 @@
 package screen
 
 import (
-	"time"
-
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
@@ -13,51 +11,48 @@ func (s *Screen) Start() {
 		return
 	}
 
-	if len(s.components) == 0 {
+	if len(s.renderer.components) == 0 {
 		panic("no component added to screen")
 	}
 
 	print(ansi.ClearScreen)
-	s.RenderCommandPalette()
+	s.renderer.RenderCommandPalette()
 	s.started = true
-	s.Render()
+	s.renderer.Render()
+
 	utils.WaitInterrupt(nil)
 }
 
-func (s *Screen) Render() {
-	defer func() {
-		s.lastRender = time.Now()
-	}()
+func (r *Renderer) Render() {
+	r.Lock()
+	defer r.Unlock()
 
+	r.renderCore()
+}
+
+func (r *Renderer) renderCore() {
 	print(ansi.MakeCursorInvisible)
 	defer print(ansi.MakeCursorVisible)
 
-	if s.CommandPalette == nil {
-		s.render()
-		s.RenderCommandPalette()
-		return
-	}
-
-	s.render()
-	s.RenderCommandPalette()
+	r.render()
 }
 
-func (s *Screen) render() {
+func (r *Renderer) render() {
 	print(ansi.SaveCursorPos)
 	defer print(ansi.RestoreCursorPos)
 
-	print(ansi.GoToFirstBlock)
-
-	s.readComponents()
+	r.readComponents()
 }
 
-func (s *Screen) readComponents() {
-	for _, c := range s.components {
-		s.readComponent(c)
+func (r *Renderer) readComponents() {
+	for i := range r.components {
+		r.readComponent(i)
 	}
 }
 
-func (s *Screen) readComponent(c *Component) {
+func (r *Renderer) readComponent(index int) {
+	c := r.components[index]
+
 	sizeX, sizeY := c.p.GetSize()
 	buffer := c.p.GetBuffer()
 	panelConfig := c.p.GetConfig()
@@ -88,13 +83,16 @@ func (s *Screen) readComponent(c *Component) {
 
 }
 
-func (s *Screen) RenderCommandPalette() {
-	ansi.GotoRowAndColumn(s.defaultCursorPosY, s.defaultCursorPosX)
-	if s.CommandPalette == nil {
+func (r *Renderer) RenderCommandPalette() {
+	r.Lock()
+	defer r.Unlock()
+
+	ansi.GotoRowAndColumn(utils.TerminalHeight, 0)
+	if r.commandPalette == nil {
 		return
 	}
 
 	print(ansi.EraseLine)
-	print(s.CommandPalette.String())
-	ansi.GotoRowAndColumn(s.defaultCursorPosY, len(s.CommandPalette.Config.Prompt)+s.CommandPalette.PromptLine.GetCursorIndex()+1)
+	print(r.commandPalette.String())
+	ansi.GotoRowAndColumn(utils.TerminalHeight, len(r.commandPalette.Config.Prompt)+r.commandPalette.PromptLine.GetCursorIndex()+1)
 }

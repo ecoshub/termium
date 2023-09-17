@@ -16,13 +16,6 @@ type Config struct {
 	ContentStyle *style.Style
 }
 
-type Panel interface {
-	GetSize() (int, int)
-	GetBuffer() []string
-	GetConfig() *Config
-	ChangeHandler(h func())
-}
-
 type Basic struct {
 	Config *Config
 
@@ -47,10 +40,11 @@ func NewBasicPanel(conf *Config) *Basic {
 		conf.TitleStyle = &style.Style{}
 	}
 	return &Basic{
-		width:  conf.Width,
-		height: height,
-		Config: conf,
-		lines:  make([]string, height),
+		width:      conf.Width,
+		height:     height,
+		Config:     conf,
+		lines:      make([]string, height),
+		hasChanged: func() {},
 	}
 }
 
@@ -83,6 +77,9 @@ func (bp *Basic) GetBuffer() []string {
 }
 
 func (bp *Basic) ChangeHandler(f func()) {
+	if f == nil {
+		return
+	}
 	bp.hasChanged = f
 }
 

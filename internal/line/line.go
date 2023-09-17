@@ -4,10 +4,12 @@ type Line struct {
 	buffer []rune
 	cap    int
 	index  int
+	width  int
 }
 
-func New() *Line {
+func New(width int) *Line {
 	return &Line{
+		width:  width,
 		buffer: make([]rune, 0, 8),
 	}
 }
@@ -30,6 +32,9 @@ func (l *Line) Backspace() {
 }
 
 func (l *Line) Append(char rune) {
+	if l.index >= l.width {
+		return
+	}
 	if l.index == l.cap {
 		l.buffer = append(l.buffer, char)
 	} else {

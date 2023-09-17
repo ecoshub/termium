@@ -53,7 +53,7 @@ func ClearLine(line string, limit int) string {
 	line = Strip(line)
 	line = strings.TrimSpace(line)
 	if len(line) > limit {
-		line = utils.CutUnicode(line, limit-3)
+		line = utils.CutUnicode(line, limit-4)
 		line += "..."
 	}
 	return line
