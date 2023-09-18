@@ -22,7 +22,7 @@ func (h *History) Add(line string) {
 		h.index++
 	}
 	h.lines = append(h.lines, line)
-	h.cursor = h.index - 1
+	h.cursor = h.index
 }
 
 func (h *History) Clear() {
@@ -35,18 +35,16 @@ func (h *History) Up() string {
 	if len(h.lines) == 0 {
 		return ""
 	}
-	temp := h.cursor
-	h.cursor = (h.cursor + len(h.lines) - 1) % len(h.lines)
-	return h.lines[temp]
+	h.cursor = (h.cursor - 1) % len(h.lines)
+	return h.lines[h.cursor]
 }
 
 func (h *History) Down() string {
 	if len(h.lines) == 0 {
 		return ""
 	}
-	temp := h.cursor
 	h.cursor = (h.cursor + 1) % len(h.lines)
-	return h.lines[temp]
+	return h.lines[h.cursor]
 }
 
 func (h *History) Len() int {
