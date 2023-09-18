@@ -35,7 +35,7 @@ func (h *History) Up() string {
 	if len(h.lines) == 0 {
 		return ""
 	}
-	h.cursor = (h.cursor - 1) % len(h.lines)
+	h.cursor = (len(h.lines) + h.cursor - 1) % len(h.lines)
 	return h.lines[h.cursor]
 }
 
@@ -43,7 +43,7 @@ func (h *History) Down() string {
 	if len(h.lines) == 0 {
 		return ""
 	}
-	h.cursor = (h.cursor + 1) % len(h.lines)
+	h.cursor = (len(h.lines) + h.cursor + 1) % len(h.lines)
 	return h.lines[h.cursor]
 }
 
