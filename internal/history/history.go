@@ -5,9 +5,9 @@ var (
 )
 
 type History struct {
+	lines    []string
 	capacity int
 	index    int
-	lines    []string
 	cursor   int
 }
 
@@ -31,6 +31,7 @@ func (h *History) Clear() {
 	h.lines = make([]string, 0, h.capacity)
 	h.index = 0
 	h.cursor = 0
+	h.Add("")
 }
 
 func (h *History) Up() string {
