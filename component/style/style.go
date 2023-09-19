@@ -7,15 +7,26 @@ import (
 )
 
 var (
+	// DefaultStyleEvent a yellow'ish color style
 	DefaultStyleInfo *Style = &Style{
 		ForegroundColor: 228,
 		Italic:          true,
 	}
+	// DefaultStyleEvent a orange'ish color style
 	DefaultStyleWarning *Style = &Style{
 		ForegroundColor: 209,
 	}
+	// DefaultStyleEvent a red'ish color style
 	DefaultStyleError *Style = &Style{
 		ForegroundColor: 197,
+	}
+	// DefaultStyleEvent a green'ish color style
+	DefaultStyleSuccess *Style = &Style{
+		ForegroundColor: 83,
+	}
+	// DefaultStyleEvent a cyan'ish color style
+	DefaultStyleEvent *Style = &Style{
+		ForegroundColor: 45,
 	}
 )
 

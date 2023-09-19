@@ -63,6 +63,31 @@ func main() {
 			return
 		}
 
+		if strings.HasPrefix(input, ":dump ") {
+			tokens := strings.Split(input, " ")
+			if len(tokens) != 2 {
+				historyPanel.Push("unsupported number of argument for 'dump' command", style.DefaultStyleError)
+				return
+			}
+			path := tokens[1]
+			err := historyPanel.Dump(path)
+			if err != nil {
+				historyPanel.Push("'dump' command error. err: "+err.Error(), style.DefaultStyleError)
+				return
+			}
+			return
+		}
+
+		if strings.HasPrefix(input, ":flush") {
+			tokens := strings.Split(input, " ")
+			if len(tokens) != 1 {
+				historyPanel.Push("unsupported number of argument for 'dump' command", style.DefaultStyleError)
+				return
+			}
+			historyPanel.Flush()
+			return
+		}
+
 		// lets add a command
 		// if command is clear. clear the history pallet
 		if input == "clear" {

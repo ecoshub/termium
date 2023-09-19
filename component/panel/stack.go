@@ -2,13 +2,16 @@ package panel
 
 import (
 	"errors"
+	"os"
+	"strings"
 
 	"github.com/ecoshub/termium/component/style"
 )
 
 type Stack struct {
 	*Base
-	index int
+	content []string
+	index   int
 }
 
 func NewStackPanel(conf *Config) *Stack {
@@ -16,15 +19,6 @@ func NewStackPanel(conf *Config) *Stack {
 	return &Stack{
 		Base: b,
 	}
-}
-
-func (sp *Stack) Write(index int, line string) error {
-	if index > sp.index {
-		return errors.New("index out of range")
-	}
-	sp.lines[index] = &Line{Line: "", Style: &style.Style{}}
-	sp.render()
-	return nil
 }
 
 func (sp *Stack) Push(line string, optionalStyle ...*style.Style) {
@@ -39,7 +33,32 @@ func (sp *Stack) Push(line string, optionalStyle ...*style.Style) {
 		sp.lines[sp.index] = &Line{Line: line, Style: sty}
 		sp.index++
 	}
+	sp.content = append(sp.content, line)
 	sp.render()
+}
+
+func (sp *Stack) Flush() {
+	sp.content = make([]string, 0, 16)
+}
+
+func (sp *Stack) Dump(path string) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	if len(sp.content) == 0 {
+		return errors.New("panel content is empty")
+	}
+	b := strings.Builder{}
+	b.Grow(20 * len(sp.content))
+	for _, s := range sp.content {
+		b.WriteString(s + "\n")
+	}
+	_, err = f.WriteString(b.String())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (sp *Stack) Clear() {

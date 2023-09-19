@@ -22,6 +22,7 @@ type Base struct {
 	height     int
 	lines      []*Line
 	hasChanged func()
+	content    string
 }
 
 func NewBasicPanel(conf *Config) *Base {
