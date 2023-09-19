@@ -12,7 +12,9 @@ type History struct {
 }
 
 func New(capacity int) *History {
-	return &History{capacity: capacity, lines: make([]string, 0, capacity)}
+	h := &History{capacity: capacity, lines: make([]string, 0, capacity)}
+	h.Add("")
+	return h
 }
 
 func (h *History) Add(line string) {
