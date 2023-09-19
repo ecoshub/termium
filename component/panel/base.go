@@ -7,19 +7,6 @@ import (
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
-type Line struct {
-	Line  string
-	Style *style.Style
-}
-
-func NewLines(size int) []*Line {
-	lines := make([]*Line, size)
-	for i := range lines {
-		lines[i] = &Line{Line: "", Style: &style.Style{}}
-	}
-	return lines
-}
-
 type Config struct {
 	Width        int
 	Height       int
@@ -60,11 +47,15 @@ func NewBasicPanel(conf *Config) *Base {
 	}
 }
 
-func (bp *Base) Write(index int, line string) error {
+func (bp *Base) Write(index int, line string, optionalStyle ...*style.Style) error {
+	sty := bp.Config.ContentStyle
+	if len(optionalStyle) > 0 {
+		sty = optionalStyle[0]
+	}
 	if index >= (bp.height) {
 		return fmt.Errorf("index out of range. index: %d, size: %d", index, bp.height)
 	}
-	bp.lines[index] = &Line{Line: "", Style: &style.Style{}}
+	bp.lines[index] = &Line{Line: "", Style: sty}
 	bp.renderLine(index)
 	bp.hasChanged()
 	return nil
