@@ -70,7 +70,7 @@ func main() {
 				return
 			}
 			path := tokens[1]
-			err := historyPanel.Dump(path)
+			_, err := historyPanel.Dump(path)
 			if err != nil {
 				historyPanel.Push("'dump' command error. err: "+err.Error(), style.DefaultStyleError)
 				return
