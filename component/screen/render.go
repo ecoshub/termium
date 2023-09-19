@@ -24,6 +24,8 @@ func (s *Screen) Start() {
 }
 
 func (r *Renderer) Render() {
+	print(ansi.MakeCursorInvisible)
+
 	r.Lock()
 	defer r.Unlock()
 
@@ -31,8 +33,6 @@ func (r *Renderer) Render() {
 }
 
 func (r *Renderer) renderCore() {
-	print(ansi.MakeCursorInvisible)
-	defer print(ansi.MakeCursorVisible)
 
 	r.render()
 }
@@ -84,6 +84,9 @@ func (r *Renderer) readComponent(index int) {
 }
 
 func (r *Renderer) RenderCommandPalette() {
+	print(ansi.MakeCursorInvisible)
+	defer print(ansi.MakeCursorVisible)
+
 	r.Lock()
 	defer r.Unlock()
 
@@ -93,6 +96,8 @@ func (r *Renderer) RenderCommandPalette() {
 	}
 
 	print(ansi.EraseLine)
-	print(r.commandPalette.String())
+	print(r.commandPalette.PromptString())
+	print(r.commandPalette.LineString())
 	ansi.GotoRowAndColumn(utils.TerminalHeight, len(r.commandPalette.Config.Prompt)+r.commandPalette.PromptLine.GetCursorIndex()+1)
+
 }

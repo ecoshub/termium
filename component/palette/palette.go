@@ -107,10 +107,12 @@ func (p *Palette) listenKeyEvents() {
 	}
 }
 
-func (p *Palette) String() string {
-	s := style.SetStyle(p.Config.Prompt, p.Config.Style)
-	s += p.PromptLine.String()
-	return s
+func (p *Palette) PromptString() string {
+	return style.SetStyle(p.Config.Prompt, p.Config.Style)
+}
+
+func (p *Palette) LineString() string {
+	return p.PromptLine.String()
 }
 
 func (p *Palette) getBuffer() string {

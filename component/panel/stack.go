@@ -41,24 +41,24 @@ func (sp *Stack) Flush() {
 	sp.content = make([]string, 0, 16)
 }
 
-func (sp *Stack) Dump(path string) error {
+func (sp *Stack) Dump(path string) (int, error) {
+	if len(sp.content) == 0 {
+		return 0, errors.New("panel content is empty")
+	}
 	f, err := os.Create(path)
 	if err != nil {
-		return err
-	}
-	if len(sp.content) == 0 {
-		return errors.New("panel content is empty")
+		return 0, err
 	}
 	b := strings.Builder{}
 	b.Grow(20 * len(sp.content))
 	for _, s := range sp.content {
 		b.WriteString(s + "\n")
 	}
-	_, err = f.WriteString(b.String())
+	n, err := f.WriteString(b.String())
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return n, nil
 }
 
 func (sp *Stack) Clear() {
