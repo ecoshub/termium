@@ -28,10 +28,10 @@ func main() {
 	}
 
 	// lets create a stack panel to use as a command history
-	tp := panel.NewASCIIPanel(&panel.Config{
+	tp := panel.NewTextPanel(&panel.Config{
 		Width:       100,
 		Height:      10,
-		Title:       "ASCII Panel",
+		Title:       "Text Panel",
 		RenderTitle: true,
 		TitleStyle: &style.Style{
 			BackgroundColor: 60,

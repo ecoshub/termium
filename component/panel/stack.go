@@ -21,6 +21,21 @@ func NewStackPanel(conf *Config) *Stack {
 	}
 }
 
+func (sp *Stack) Append(line string) {
+	if sp.index == 0 {
+		sp.Push(line)
+		return
+	}
+	l := sp.lines[sp.index-1]
+	l.Line = l.Line + line
+	sp.render()
+}
+
+func (sp *Stack) Appendln(line string) {
+	sp.Append(line)
+	sp.index++
+}
+
 func (sp *Stack) Push(line string, optionalStyle ...*style.Style) {
 	sty := sp.Config.ContentStyle
 	if len(optionalStyle) > 0 {
@@ -33,7 +48,9 @@ func (sp *Stack) Push(line string, optionalStyle ...*style.Style) {
 		sp.lines[sp.index] = &Line{Line: line, Style: sty}
 		sp.index++
 	}
-	sp.content = append(sp.content, line)
+	if sp.index > 1 {
+		sp.content = append(sp.content, sp.lines[sp.index-2].Line)
+	}
 	sp.render()
 }
 
@@ -42,16 +59,17 @@ func (sp *Stack) Flush() {
 }
 
 func (sp *Stack) Dump(path string) (int, error) {
+	if sp.index == 0 {
+		return 0, errors.New("panel content is empty")
+	}
+	dump := append(sp.content, sp.lines[sp.index-1].Line)
 	f, err := os.Create(path)
 	if err != nil {
 		return 0, err
 	}
-	if len(sp.content) == 0 {
-		return 0, errors.New("panel content is empty")
-	}
 	b := strings.Builder{}
-	b.Grow(20 * len(sp.content))
-	for _, s := range sp.content {
+	b.Grow(20 * len(dump))
+	for _, s := range dump {
 		b.WriteString(s + "\n")
 	}
 	n, err := f.WriteString(b.String())

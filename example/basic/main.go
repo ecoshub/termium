@@ -97,6 +97,12 @@ func main() {
 			return
 		}
 
+		if strings.HasPrefix(input, ":") {
+			input = strings.TrimPrefix(input, ":")
+			historyPanel.Append(input)
+			return
+		}
+
 		// append input in to history panel
 		historyPanel.Push(input)
 	})

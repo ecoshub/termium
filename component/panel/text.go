@@ -8,47 +8,47 @@ import (
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
-type ASCII struct {
+type Text struct {
 	*Base
 	content string
 	text    string
 }
 
-func NewASCIIPanel(conf *Config) *ASCII {
+func NewTextPanel(conf *Config) *Text {
 	b := NewBasicPanel(conf)
-	return &ASCII{
+	return &Text{
 		Base: b,
 	}
 }
 
-func (a *ASCII) Append(text string) {
+func (a *Text) Append(text string) {
 	a.text += text
 	a.content += text
 	a.render()
 }
 
-func (a *ASCII) Appendln(text string) {
+func (a *Text) Appendln(text string) {
 	a.Append(text + "\n")
 }
 
-func (a *ASCII) Clear() {
+func (a *Text) Clear() {
 	a.text = ""
 	a.render()
 }
 
-func (a *ASCII) GetBuffer() []*Line {
+func (a *Text) GetBuffer() []*Line {
 	return a.lines
 }
 
-func (a *ASCII) GetSize() (int, int) {
+func (a *Text) GetSize() (int, int) {
 	return a.width, a.height
 }
 
-func (a *ASCII) Flush() {
+func (a *Text) Flush() {
 	a.content = ""
 }
 
-func (a *ASCII) Dump(path string) (int, error) {
+func (a *Text) Dump(path string) (int, error) {
 	f, err := os.Create(path)
 	if err != nil {
 		return 0, err
@@ -63,7 +63,7 @@ func (a *ASCII) Dump(path string) (int, error) {
 	return n, nil
 }
 
-func (a *ASCII) render() {
+func (a *Text) render() {
 	defer a.hasChanged()
 
 	a.text = ansi.Strip(a.text)
