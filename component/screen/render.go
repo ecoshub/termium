@@ -42,7 +42,7 @@ func (s *Screen) Print(input string) {
 
 func (s *Screen) AppendToLastLine(input string) {
 	last := s.CommandPalette.GetLineBuffer()
-	ansi.GotoRowAndColumn(utils.TerminalHeight-1, len(last)+1)
+	ansi.GotoRowAndColumn(utils.TerminalHeight-1, len(ansi.Strip(last))+1)
 	s.CommandPalette.AppendLineBuffer(input)
 	println(input)
 	s.renderer.RenderCommandPalette()
