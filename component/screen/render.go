@@ -11,14 +11,13 @@ func (s *Screen) Start() {
 		return
 	}
 
-	if len(s.renderer.components) == 0 {
-		panic("no component added to screen")
+	if len(s.renderer.components) != 0 {
+		print(ansi.ClearScreen)
+		s.renderer.Render()
 	}
 
-	print(ansi.ClearScreen)
 	s.renderer.RenderCommandPalette()
 	s.started = true
-	s.renderer.Render()
 
 	utils.WaitInterrupt(nil)
 }
@@ -32,8 +31,14 @@ func (r *Renderer) Render() {
 	r.renderCore()
 }
 
-func (r *Renderer) renderCore() {
+func PrintCommandPrompt(input string) {
+	print(ansi.EraseLine)
+	println()
+	ansi.GotoRowAndColumn(utils.TerminalHeight-1, 0)
+	print(input)
+}
 
+func (r *Renderer) renderCore() {
 	r.render()
 }
 
