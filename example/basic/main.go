@@ -103,3 +103,9 @@ func main() {
 
 	s.Start()
 }
+
+// func push(s *screen.Screen, input string) {
+// 	s.PrintCommandPrompt(input[:4])
+// 	s.PrintCommandPrompt(input[4:7])
+// 	s.PrintCommandPrompt(input[7:])
+// }

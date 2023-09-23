@@ -31,11 +31,20 @@ func (r *Renderer) Render() {
 	r.renderCore()
 }
 
-func PrintCommandPrompt(input string) {
-	print(ansi.EraseLine)
-	println()
+func (s *Screen) Print(input string) {
 	ansi.GotoRowAndColumn(utils.TerminalHeight-1, 0)
-	print(input)
+	println()
+	print(ansi.EraseLine)
+	println(input)
+	s.CommandPalette.SetLastCommand(input)
+	s.renderer.RenderCommandPalette()
+}
+
+func (s *Screen) AppendToLastLine(input string) {
+	last := s.CommandPalette.GetLastCommand()
+	ansi.GotoRowAndColumn(utils.TerminalHeight-1, len(last)+1)
+	println(input)
+	s.renderer.RenderCommandPalette()
 }
 
 func (r *Renderer) renderCore() {
