@@ -17,13 +17,13 @@ type Config struct {
 }
 
 type Palette struct {
-	Config      *Config
-	PromptLine  *line.Line
-	history     *history.History
-	keyEvents   <-chan keyboard.KeyEvent
-	actionFunc  func(action *KeyAction)
-	hasChanged  func()
-	lastCommand string
+	Config     *Config
+	PromptLine *line.Line
+	history    *history.History
+	keyEvents  <-chan keyboard.KeyEvent
+	actionFunc func(action *KeyAction)
+	hasChanged func()
+	lineBuffer string
 }
 
 func New(cpc *Config) (*Palette, error) {
@@ -116,9 +116,11 @@ func (p *Palette) LineString() string {
 	return p.PromptLine.String()
 }
 
-func (p *Palette) SetLastCommand(input string) { p.lastCommand = input }
+func (p *Palette) SetLineBuffer(input string) { p.lineBuffer = input }
 
-func (p *Palette) GetLastCommand() string { return p.lastCommand }
+func (p *Palette) AppendLineBuffer(input string) { p.lineBuffer += input }
+
+func (p *Palette) GetLineBuffer() string { return p.lineBuffer }
 
 func (p *Palette) getBuffer() string {
 	return p.Config.Prompt + p.PromptLine.String()

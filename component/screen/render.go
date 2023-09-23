@@ -36,13 +36,14 @@ func (s *Screen) Print(input string) {
 	println()
 	print(ansi.EraseLine)
 	println(input)
-	s.CommandPalette.SetLastCommand(input)
+	s.CommandPalette.SetLineBuffer(input)
 	s.renderer.RenderCommandPalette()
 }
 
 func (s *Screen) AppendToLastLine(input string) {
-	last := s.CommandPalette.GetLastCommand()
+	last := s.CommandPalette.GetLineBuffer()
 	ansi.GotoRowAndColumn(utils.TerminalHeight-1, len(last)+1)
+	s.CommandPalette.AppendLineBuffer(input)
 	println(input)
 	s.renderer.RenderCommandPalette()
 }
