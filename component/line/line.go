@@ -1,10 +1,14 @@
-package panel
+package line
 
 import "github.com/ecoshub/termium/component/style"
 
 type Line struct {
 	Line  string
 	Style *style.Style
+}
+
+func Empty() *Line {
+	return &Line{Style: &style.Style{}}
 }
 
 func NewLines(size int) []*Line {

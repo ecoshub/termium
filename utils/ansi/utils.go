@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
-	"github.com/ecoshub/termium/utils"
 )
 
 const ansiRegex = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
@@ -52,9 +50,5 @@ func SetBlinkStyle(line string) string {
 func ClearLine(line string, limit int) string {
 	line = Strip(line)
 	line = strings.TrimSpace(line)
-	if len(line) > limit {
-		line = utils.CutUnicode(line, limit-4)
-		line += "..."
-	}
 	return line
 }

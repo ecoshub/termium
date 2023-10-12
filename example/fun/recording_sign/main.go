@@ -26,18 +26,17 @@ func main() {
 		return
 	}
 
-	// lets create a stack panel to use as a command history
-	historyPanel := panel.NewStackPanel(&config.Config{
-		Width:  100,
-		Height: utils.TerminalHeight - 2,
-		Title:  "History:",
+	recordingPanel := panel.NewBasicPanel(&config.Config{
+		Width:  1,
+		Height: 1,
 		ContentStyle: &style.Style{
-			ForegroundColor: 195,
+			ForegroundColor: style.DefaultStyleError.ForegroundColor,
 		},
 	})
 
-	// lets add this panel to top left corner (0,0)
-	s.Add(historyPanel, 0, 0)
+	s.Add(recordingPanel, utils.TerminalWith-1, 0)
+
+	recordingPanel.Write(0, " ")
 
 	// command handler
 	s.CommandPalette.ListenKeyEventEnter(func(input string) {
@@ -45,17 +44,20 @@ func main() {
 		// also add command pallets own history module to select with up/down arrow keys later
 		s.CommandPalette.AddToHistory(input)
 
-		// lets add a command
-		// if command is clear. clear the history pallet
-		if input == ":clear" {
-			historyPanel.Clear()
+		switch input {
+		case ":clear":
 			s.CommandPalette.ClearHistory()
 			s.ResetScreen()
-			return
+			recordingPanel.Write(0, " ")
+			recordingPanel.Config.ContentStyle.Blink = false
+		case ":record":
+			recordingPanel.Config.ContentStyle.Blink = true
+			recordingPanel.Write(0, "●")
+		case ":stop":
+			recordingPanel.Write(0, " ")
+			recordingPanel.Config.ContentStyle.Blink = false
 		}
 
-		// append input in to history panel
-		historyPanel.Push(input)
 	})
 
 	s.Start()

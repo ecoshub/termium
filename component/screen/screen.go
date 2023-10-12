@@ -18,12 +18,11 @@ type Renderer struct {
 }
 
 type Screen struct {
-	config *Config
-
-	started bool
-
-	renderer       *Renderer
+	Config         *Config
 	CommandPalette *palette.Palette
+	lineBuffer     string
+	renderer       *Renderer
+	started        bool
 }
 
 func New(optionalConfig ...*Config) (*Screen, error) {
@@ -36,16 +35,14 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 		return nil, err
 	}
 	s := &Screen{
-		config:         cfg,
+		Config:         cfg,
 		CommandPalette: cp,
 		renderer: &Renderer{
-			// defaultCursorPosX: DefaultCommandPalettePositionX,
-			// defaultCursorPosY: utils.TerminalHeight,
 			components:     make([]*Component, 0, 2),
 			commandPalette: cp,
 		},
 	}
-	s.CommandPalette.ChangeEvent(func() { s.renderer.RenderCommandPalette() })
+	s.CommandPalette.AttachChangeHandler(func() { s.renderer.RenderCommandPalette() })
 	return s, nil
 }
 

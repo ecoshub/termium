@@ -1,4 +1,4 @@
-package line
+package palette
 
 type Line struct {
 	buffer []rune
@@ -7,7 +7,7 @@ type Line struct {
 	width  int
 }
 
-func New(width int) *Line {
+func NewLine(width int) *Line {
 	return &Line{
 		width:  width,
 		buffer: make([]rune, 0, 8),
@@ -76,6 +76,14 @@ func (l *Line) Clear() {
 	l.buffer = make([]rune, 0, 8)
 	l.cap = 0
 	l.index = 0
+}
+
+func (l *Line) GotoStart() {
+	l.index = 0
+}
+
+func (l *Line) GotoEnd() {
+	l.index = len(l.buffer)
 }
 
 func (l *Line) GetCursorIndex() int {

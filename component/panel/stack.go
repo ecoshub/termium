@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ecoshub/termium/component/config"
+	"github.com/ecoshub/termium/component/line"
 	"github.com/ecoshub/termium/component/style"
 )
 
@@ -14,26 +16,26 @@ type Stack struct {
 	index   int
 }
 
-func NewStackPanel(conf *Config) *Stack {
+func NewStackPanel(conf *config.Config) *Stack {
 	b := NewBasicPanel(conf)
 	return &Stack{
 		Base: b,
 	}
 }
 
-func (sp *Stack) Push(line string, optionalStyle ...*style.Style) {
+func (sp *Stack) Push(input string, optionalStyle ...*style.Style) {
 	sty := sp.Config.ContentStyle
 	if len(optionalStyle) > 0 {
 		sty = optionalStyle[0]
 	}
-	if sp.index >= sp.height {
+	if sp.index >= sp.Config.Height {
 		sp.lines = sp.lines[1:]
-		sp.lines = append(sp.lines, &Line{Line: line, Style: sty})
+		sp.lines = append(sp.lines, &line.Line{Line: input, Style: sty})
 	} else {
-		sp.lines[sp.index] = &Line{Line: line, Style: sty}
+		sp.lines[sp.index] = &line.Line{Line: input, Style: sty}
 		sp.index++
 	}
-	sp.content = append(sp.content, line)
+	sp.content = append(sp.content, input)
 	sp.render()
 }
 

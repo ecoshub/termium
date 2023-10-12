@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/ecoshub/termium/component/config"
 	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/screen"
@@ -23,7 +24,7 @@ func main() {
 		return
 	}
 
-	sp := panel.NewStackPanel(&panel.Config{
+	sp := panel.NewStackPanel(&config.Config{
 		Width:       20,
 		Height:      10,
 		Title:       "Panel_1:",
@@ -36,7 +37,7 @@ func main() {
 		},
 	})
 
-	sp1 := panel.NewStackPanel(&panel.Config{
+	sp1 := panel.NewStackPanel(&config.Config{
 		Width:       20,
 		Height:      10,
 		Title:       "Panel_2:",
@@ -49,7 +50,7 @@ func main() {
 		},
 	})
 
-	sp2 := panel.NewStackPanel(&panel.Config{
+	sp2 := panel.NewStackPanel(&config.Config{
 		Width:       20,
 		Height:      10,
 		Title:       "Panel_3:",
@@ -62,7 +63,7 @@ func main() {
 		},
 	})
 
-	sp3 := panel.NewStackPanel(&panel.Config{
+	sp3 := panel.NewStackPanel(&config.Config{
 		Width:       20,
 		Height:      10,
 		Title:       "Panel_4:",

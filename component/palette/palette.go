@@ -1,29 +1,33 @@
 package palette
 
 import (
-	"os"
-
+	"github.com/ecoshub/termium/component/history"
 	"github.com/ecoshub/termium/component/style"
-	"github.com/ecoshub/termium/internal/history"
-	"github.com/ecoshub/termium/internal/line"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 	"github.com/eiannone/keyboard"
 )
 
 type Config struct {
+	// Prompt prompt
 	Prompt string
-	Style  *style.Style
+	// Style prompt style
+	Style *style.Style
 }
 
 type Palette struct {
-	Config     *Config
-	PromptLine *line.Line
-	history    *history.History
-	keyEvents  <-chan keyboard.KeyEvent
-	actionFunc func(action *KeyAction)
-	hasChanged func()
-	lineBuffer string
+	// Config base palette configuration
+	Config *Config
+	// PromptLine is a line implementation that can control input and cursor
+	PromptLine *Line
+	// history history for old inputs
+	history *history.History
+	// keyEvents key event channel
+	keyEvents <-chan keyboard.KeyEvent
+	// eventHandler event handler function
+	eventHandler func(eventCode EventCode, input string)
+	// changeHandler it triggers when there is a change occur
+	changeHandler func()
 }
 
 func New(cpc *Config) (*Palette, error) {
@@ -33,102 +37,57 @@ func New(cpc *Config) (*Palette, error) {
 	}
 
 	cpc.Prompt = ansi.Strip(cpc.Prompt)
+
 	p := &Palette{
 		Config:     cpc,
 		keyEvents:  keyEvents,
 		history:    history.New(history.DefaultCapacity),
-		PromptLine: line.New(utils.TerminalWith - len(cpc.Prompt)),
+		PromptLine: NewLine(utils.TerminalWith - len(cpc.Prompt)),
 	}
 
 	go p.listenKeyEvents()
 	return p, nil
 }
 
+// ClearHistory clear command palette history
 func (p *Palette) ClearHistory() {
 	p.history.Clear()
 }
 
+// AddToHistory add to command line history to access it with up down arrow keys later
 func (p *Palette) AddToHistory(line string) {
 	p.history.Add(line)
 }
 
-func (p *Palette) ChangeEvent(f func()) {
+// AttachChangeHandler attach change handler that will trigger when command pallet has any change
+// including 'typing' and other key interactions
+func (p *Palette) AttachChangeHandler(f func()) {
 	if f == nil {
 		return
 	}
-	p.hasChanged = f
+	p.changeHandler = f
 }
 
+// ListenKeyEventEnter listen for key event 'Enter'
+// it is the main handler for command input
+// 'input' can not be null string
 func (p *Palette) ListenKeyEventEnter(f func(input string)) {
 	if f == nil {
 		return
 	}
-	p.actionFunc = func(action *KeyAction) {
-		if action.Action == KeyActionEnter {
-			f(action.Input)
+	p.eventHandler = func(eventCode EventCode, input string) {
+		if eventCode == EnterKeyPressed {
+			f(input)
 		}
 	}
 }
 
-func (p *Palette) listenActions(f func(action *KeyAction)) {
-	if f == nil {
-		return
-	}
-	p.actionFunc = f
-}
-
-func (p *Palette) listenKeyEvents() {
-	for {
-		select {
-		case event := <-p.keyEvents:
-			switch event.Key {
-			case keyboard.KeyEnter:
-				p.keyEnter()
-			case keyboard.KeyArrowUp:
-				p.keyArrowUp()
-			case keyboard.KeyArrowDown:
-				p.keyArrowDown()
-			case keyboard.KeyArrowLeft:
-				p.keyArrowLeft()
-			case keyboard.KeyArrowRight:
-				p.keyArrowRight()
-			case keyboard.KeySpace:
-				p.keySpace()
-			case keyboard.KeyBackspace, keyboard.KeyBackspace2:
-				p.keyBackspace()
-			case keyboard.KeyEsc:
-				os.Exit(0)
-			case keyboard.KeyCtrlC:
-				os.Exit(0)
-			default:
-				p.keyDefault(event.Rune)
-			}
-			p.hasChanged()
-		}
-	}
-}
-
-func (p *Palette) PromptString() string {
+// Prompt get prompt string with style
+func (p *Palette) Prompt() string {
 	return style.SetStyle(p.Config.Prompt, p.Config.Style)
 }
 
-func (p *Palette) LineString() string {
+// Input get input line
+func (p *Palette) Input() string {
 	return p.PromptLine.String()
-}
-
-func (p *Palette) SetLineBuffer(input string) { p.lineBuffer = input }
-
-func (p *Palette) AppendLineBuffer(input string) { p.lineBuffer += input }
-
-func (p *Palette) GetLineBuffer() string { return p.lineBuffer }
-
-func (p *Palette) getBuffer() string {
-	return p.Config.Prompt + p.PromptLine.String()
-}
-
-func (p *Palette) runActionFunction(action ActionCode, input string) {
-	if p.actionFunc == nil {
-		return
-	}
-	p.actionFunc(&KeyAction{Action: action, Input: input})
 }

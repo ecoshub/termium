@@ -10,33 +10,35 @@ const (
 	DefaultCommandPalettePrompt string = ">> "
 )
 
-type ComponentConfig struct {
-	PosX int
-	PosY int
-}
-
 type Component struct {
-	posX int
-	posY int
-	p    panel.Panel
+	posX       int
+	posY       int
+	renderable Renderable
 }
 
-// ConstantText add constant text to string if you don't want to change colors just enter zeros (0)
-func (s *Screen) ConstantText(posX, posY int, line string, sty *style.Style) {
-	p := panel.ConstantText(line, sty)
+// FixedText add constant text to screen
+func (s *Screen) FixedText(posX, posY int, line string, optionalStyle ...*style.Style) {
+	var st *style.Style
+	if len(optionalStyle) == 1 {
+		st = optionalStyle[0]
+	} else {
+		st = &style.Style{}
+	}
+	p := panel.NewTextLine(line, st)
 	s.Add(p, posX, posY)
 }
 
-func (s *Screen) Add(p panel.Panel, posX, posY int) {
-	pSizeX, pSizeY := p.GetSize()
-	if posX+pSizeX > utils.TerminalWith {
+// Add add renderable component to given screen position
+func (s *Screen) Add(p Renderable, posX, posY int) {
+	conf := p.Configuration()
+	if posX+conf.Width > utils.TerminalWith {
 		panic("panel width exceeds current windows")
 	}
-	if posY+pSizeY > utils.TerminalHeight {
+	if posY+conf.Height > utils.TerminalHeight {
 		panic("panel height exceeds current windows")
 	}
 
-	s.renderer.components = append(s.renderer.components, &Component{p: p, posX: posX, posY: posY})
+	s.renderer.components = append(s.renderer.components, &Component{renderable: p, posX: posX, posY: posY})
 
-	p.ChangeHandler(func() { s.renderer.Render() })
+	p.ListenChangeHandler(func() { s.renderer.Render() })
 }

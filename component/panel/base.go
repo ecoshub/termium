@@ -3,35 +3,25 @@ package panel
 import (
 	"fmt"
 
+	"github.com/ecoshub/termium/component/config"
+	"github.com/ecoshub/termium/component/line"
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
-type Config struct {
-	Width        int
-	Height       int
-	Title        string
-	RenderTitle  bool
-	TitleStyle   *style.Style
-	ContentStyle *style.Style
-}
-
 type Base struct {
-	Config     *Config
-	width      int
-	height     int
-	lines      []*Line
+	Config     *config.Config
+	lines      []*line.Line
 	hasChanged func()
-	content    string
 }
 
-func NewBasicPanel(conf *Config) *Base {
+func NewBasicPanel(conf *config.Config) *Base {
 	if conf.Height < 1 {
 		panic("panels height can not be less than 1 row")
 	}
 	height := conf.Height
 	if conf.RenderTitle {
-		height = conf.Height - 1
+		conf.Height--
 	}
 	if conf.ContentStyle == nil {
 		conf.ContentStyle = &style.Style{}
@@ -40,54 +30,48 @@ func NewBasicPanel(conf *Config) *Base {
 		conf.TitleStyle = &style.Style{}
 	}
 	return &Base{
-		width:      conf.Width,
-		height:     height,
 		Config:     conf,
-		lines:      NewLines(height),
+		lines:      line.NewLines(height),
 		hasChanged: func() {},
 	}
 }
 
-func (bp *Base) Write(index int, line string, optionalStyle ...*style.Style) error {
+func (bp *Base) Write(index int, input string, optionalStyle ...*style.Style) error {
 	sty := bp.Config.ContentStyle
 	if len(optionalStyle) > 0 {
 		sty = optionalStyle[0]
 	}
-	if index >= (bp.height) {
-		return fmt.Errorf("index out of range. index: %d, size: %d", index, bp.height)
+	if index >= (bp.Config.Height) {
+		return fmt.Errorf("index out of range. index: %d, size: %d", index, bp.Config.Height)
 	}
-	bp.lines[index] = &Line{Line: "", Style: sty}
+	bp.lines[index] = &line.Line{Line: input, Style: sty}
 	bp.renderLine(index)
 	bp.hasChanged()
 	return nil
 }
 
 func (bp *Base) Clear() {
-	bp.lines = NewLines(bp.height)
+	bp.lines = line.NewLines(bp.Config.Height)
 	bp.render()
 	bp.hasChanged()
 }
 
 func (bp *Base) ClearLine(index int) {
-	bp.lines[index] = &Line{Line: "", Style: &style.Style{}}
+	bp.lines[index] = line.Empty()
 }
 
-func (bp *Base) GetSize() (int, int) {
-	return bp.width, bp.height
-}
-
-func (bp *Base) GetBuffer() []*Line {
+func (bp *Base) Buffer() []*line.Line {
 	return bp.lines
 }
 
-func (bp *Base) ChangeHandler(f func()) {
+func (bp *Base) ListenChangeHandler(f func()) {
 	if f == nil {
 		return
 	}
 	bp.hasChanged = f
 }
 
-func (bp *Base) GetConfig() *Config {
+func (bp *Base) Configuration() *config.Config {
 	return bp.Config
 }
 

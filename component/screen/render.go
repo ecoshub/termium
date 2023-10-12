@@ -1,10 +1,18 @@
 package screen
 
 import (
+	"github.com/ecoshub/termium/component/config"
+	"github.com/ecoshub/termium/component/line"
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 )
+
+type Renderable interface {
+	Buffer() []*line.Line
+	Configuration() *config.Config
+	ListenChangeHandler(h func())
+}
 
 func (s *Screen) Start() {
 	if s.started {
@@ -36,14 +44,13 @@ func (s *Screen) Print(input string) {
 	println()
 	print(ansi.EraseLine)
 	println(input)
-	s.CommandPalette.SetLineBuffer(input)
+	s.lineBuffer = input
 	s.renderer.RenderCommandPalette()
 }
 
 func (s *Screen) AppendToLastLine(input string) {
-	last := s.CommandPalette.GetLineBuffer()
-	ansi.GotoRowAndColumn(utils.TerminalHeight-1, len(ansi.Strip(last))+1)
-	s.CommandPalette.AppendLineBuffer(input)
+	ansi.GotoRowAndColumn(utils.TerminalHeight-1, len(ansi.Strip(s.lineBuffer))+1)
+	s.lineBuffer += input
 	println(input)
 	s.renderer.RenderCommandPalette()
 }
@@ -68,30 +75,29 @@ func (r *Renderer) readComponents() {
 func (r *Renderer) readComponent(index int) {
 	c := r.components[index]
 
-	sizeX, sizeY := c.p.GetSize()
-	buffer := c.p.GetBuffer()
-	panelConfig := c.p.GetConfig()
+	buffer := c.renderable.Buffer()
+	panelConfig := c.renderable.Configuration()
 
 	offset := 0
 	// render the title
 	if panelConfig.RenderTitle {
 		// go to title position and clear
 		ansi.GotoRowAndColumn(c.posY+1, c.posX)
-		blank := utils.FixedSizeLine("", sizeX)
+		blank := utils.FixedSizeLine("", panelConfig.Width)
 		print(string(blank))
 
 		// go to title position again to write title
 		ansi.GotoRowAndColumn(c.posY+1, c.posX)
-		line := ansi.ClearLine(panelConfig.Title, sizeX)
+		line := ansi.ClearLine(panelConfig.Title, panelConfig.Width)
 		line = style.SetStyle(line, panelConfig.TitleStyle)
 		print(line)
 		offset = 1
 	}
 
-	for i := 0; i < sizeY; i++ {
+	for i := 0; i < panelConfig.Height; i++ {
 		ansi.GotoRowAndColumn(c.posY+i+offset+1, c.posX)
-		line := ansi.ClearLine(string(buffer[i].Line), sizeX)
-		line = string(utils.FixedSizeLine(line, sizeX))
+		line := ansi.ClearLine(string(buffer[i].Line), panelConfig.Width)
+		line = string(utils.FixedSizeLine(line, panelConfig.Width))
 		line = style.SetStyle(line, buffer[i].Style)
 		print(line)
 	}
@@ -111,8 +117,8 @@ func (r *Renderer) RenderCommandPalette() {
 	}
 
 	print(ansi.EraseLine)
-	print(r.commandPalette.PromptString())
-	print(r.commandPalette.LineString())
+	print(r.commandPalette.Prompt())
+	print(r.commandPalette.Input())
 	ansi.GotoRowAndColumn(utils.TerminalHeight, len(r.commandPalette.Config.Prompt)+r.commandPalette.PromptLine.GetCursorIndex()+1)
 
 }
