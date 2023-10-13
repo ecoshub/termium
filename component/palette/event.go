@@ -1,7 +1,6 @@
 package palette
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/ecoshub/termium/utils/ansi"
@@ -113,10 +112,7 @@ func (p *Palette) listenKeyEvents() {
 
 func (p *Palette) runEvent(eventCode EventCode, input string) {
 	if p.eventHandler == nil {
-		// inner error control
-		// for development purpose
-		err := fmt.Errorf("undefined event code. eventCode: %d, input: %s", eventCode, input)
-		panic(err)
+		return
 	}
 	p.eventHandler(eventCode, input)
 }
