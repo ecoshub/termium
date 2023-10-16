@@ -1,4 +1,6 @@
-# Termium - An Easy-To-Use Command Line Interface Package
+# Termium
+
+*Easy-To-Use Command Line Interface Package*
 
 Termium is a command line interface package that enables you to create panel-based applications with built-in command-line interaction capabilities.
 
@@ -25,19 +27,19 @@ For practical examples, please refer to the **/example** folder in the repositor
 
 Here are a few examples of TUI apps that you can develop using Termium:
 
-**Chat Application Interface**
+### Chat Application Interface
 
 ![Chat App](./visuals/chat-app-demo.gif)
 
-**TCP Application Interface**
+### TCP Application Interface
 
 ![TCP App](./visuals/tcp-app.gif)
 
-**Panels and Colors**
+### Panels and Colors
 
 ![Multi-Panel Demo](./visuals/multi-panel-demo.gif)
 
-**Progress Bars**
+### Progress Bars
 
 ![Progress](./visuals/progress.gif)
 
