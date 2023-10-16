@@ -66,4 +66,5 @@ func (sp *Stack) Dump(path string) (int, error) {
 func (sp *Stack) Clear() {
 	sp.Base.Clear()
 	sp.index = 0
+	sp.render()
 }

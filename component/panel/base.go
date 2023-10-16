@@ -50,6 +50,30 @@ func (bp *Base) Write(index int, input string, optionalStyle ...*style.Style) er
 	return nil
 }
 
+func (bp *Base) WriteMulti(lines []string) error {
+	for i := 0; i < bp.Config.Height; i++ {
+		if i >= len(lines) {
+			break
+		}
+		bp.lines[i] = &line.Line{Line: lines[i], Style: &style.Style{}}
+	}
+	bp.render()
+	bp.hasChanged()
+	return nil
+}
+
+func (bp *Base) WriteMultiStyle(lines []string, sty *style.Style) error {
+	for i := 0; i < bp.Config.Height; i++ {
+		if i >= len(lines) {
+			break
+		}
+		bp.lines[i] = &line.Line{Line: lines[i], Style: sty}
+	}
+	bp.render()
+	bp.hasChanged()
+	return nil
+}
+
 func (bp *Base) Clear() {
 	bp.lines = line.NewLines(bp.Config.Height)
 	bp.render()
