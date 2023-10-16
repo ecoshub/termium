@@ -100,3 +100,9 @@ func main() {
 - After adding input you can use **up/down** keys to switch old commands.
 - Also you can clear history using `s.CommandPalette.ClearHistory()`.
 - Use `s.Print(input)` and `s.AppendToLastLine(input)` to use screen without adding panels.
+
+## Contributing
+Contributions to this project are welcome. If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
+
+## License
+This program is licensed under the MIT License.
