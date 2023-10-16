@@ -11,7 +11,7 @@ import (
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/screen"
 	"github.com/ecoshub/termium/component/style"
-	"github.com/ecoshub/termium/example/tcp/demo"
+	"github.com/ecoshub/termium/example/tcp/core"
 	"github.com/ecoshub/termium/utils"
 )
 
@@ -59,7 +59,7 @@ func main() {
 		}
 	}()
 
-	go demo.StartListen(":9090", infoPanel)
+	go core.StartListen(":9090", infoPanel)
 
 	var client net.Conn
 	// command handler
@@ -73,14 +73,15 @@ func main() {
 		}
 		switch command {
 		case "connect":
-			client, err = net.Dial("tcp", args[1])
+			client, err = net.Dial("tcp", args[0])
 			if err != nil {
 				infoPanel.Push(err.Error())
 				return
 			}
 			if client != nil {
-				go demo.ReadClient(client, commPanel, infoPanel)
+				go core.ReadClient(client, commPanel, infoPanel)
 			}
+			return
 		}
 
 		if client == nil {
