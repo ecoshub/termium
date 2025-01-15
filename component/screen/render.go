@@ -1,18 +1,10 @@
 package screen
 
 import (
-	"github.com/ecoshub/termium/component/config"
-	"github.com/ecoshub/termium/component/line"
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 )
-
-type Renderable interface {
-	Buffer() []*line.Line
-	Configuration() *config.Config
-	ListenChangeHandler(h func())
-}
 
 func (s *Screen) Start() {
 	if s.started {
@@ -89,6 +81,10 @@ func (r *Renderer) readComponent(index int) {
 		// go to title position again to write title
 		ansi.GotoRowAndColumn(c.posY+1, c.posX)
 		line := ansi.ClearLine(panelConfig.Title, panelConfig.Width)
+		missingChars := panelConfig.Width - len(line)
+		for i := 0; i < missingChars; i++ {
+			line += " "
+		}
 		line = style.SetStyle(line, panelConfig.TitleStyle)
 		print(line)
 		offset = 1

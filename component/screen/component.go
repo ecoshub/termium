@@ -2,6 +2,7 @@ package screen
 
 import (
 	"github.com/ecoshub/termium/component/panel"
+	"github.com/ecoshub/termium/component/renderable"
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 )
@@ -13,7 +14,7 @@ const (
 type Component struct {
 	posX       int
 	posY       int
-	renderable Renderable
+	renderable renderable.Renderable
 }
 
 // FixedText add constant text to screen
@@ -29,7 +30,7 @@ func (s *Screen) FixedText(posX, posY int, line string, optionalStyle ...*style.
 }
 
 // Add add renderable component to given screen position
-func (s *Screen) Add(p Renderable, posX, posY int) {
+func (s *Screen) Add(p renderable.Renderable, posX, posY int) {
 	conf := p.Configuration()
 	if posX+conf.Width > utils.TerminalWith {
 		panic("panel width exceeds current windows")

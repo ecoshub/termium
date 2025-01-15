@@ -7,8 +7,11 @@ import (
 
 	"github.com/ecoshub/termium/component/config"
 	"github.com/ecoshub/termium/component/line"
+	"github.com/ecoshub/termium/component/renderable"
 	"github.com/ecoshub/termium/component/style"
 )
+
+var _ renderable.Renderable = &Stack{}
 
 type Stack struct {
 	*Base
@@ -28,15 +31,19 @@ func (sp *Stack) Push(input string, optionalStyle ...*style.Style) {
 	if len(optionalStyle) > 0 {
 		sty = optionalStyle[0]
 	}
-	if sp.index >= sp.Config.Height {
-		sp.lines = sp.lines[1:]
-		sp.lines = append(sp.lines, &line.Line{Line: input, Style: sty})
-	} else {
+	if sp.index < sp.Config.Height {
 		sp.lines[sp.index] = &line.Line{Line: input, Style: sty}
 		sp.index++
+	} else {
+		// shift all up and add the last one on the end
+		for i := 0; i < sp.Config.Height-1; i++ {
+			sp.lines[i] = sp.lines[i+1]
+		}
+		sp.lines[sp.Config.Height-1] = &line.Line{Line: input, Style: sty}
 	}
 	sp.content = append(sp.content, input)
-	sp.render()
+	sp.clearAllLines()
+	sp.hasChanged()
 }
 
 func (sp *Stack) Flush() {
@@ -66,5 +73,5 @@ func (sp *Stack) Dump(path string) (int, error) {
 func (sp *Stack) Clear() {
 	sp.Base.Clear()
 	sp.index = 0
-	sp.render()
+	sp.clearAllLines()
 }

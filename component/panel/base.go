@@ -5,9 +5,12 @@ import (
 
 	"github.com/ecoshub/termium/component/config"
 	"github.com/ecoshub/termium/component/line"
+	"github.com/ecoshub/termium/component/renderable"
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils/ansi"
 )
+
+var _ renderable.Renderable = &Base{}
 
 type Base struct {
 	Config     *config.Config
@@ -16,6 +19,10 @@ type Base struct {
 }
 
 func NewBasicPanel(conf *config.Config) *Base {
+	return NewBasePanel(conf)
+}
+
+func NewBasePanel(conf *config.Config) *Base {
 	if conf.Height < 1 {
 		panic("panels height can not be less than 1 row")
 	}
@@ -31,7 +38,7 @@ func NewBasicPanel(conf *config.Config) *Base {
 	}
 	return &Base{
 		Config:     conf,
-		lines:      line.NewLines(height),
+		lines:      line.NewLines(height, conf.ContentStyle),
 		hasChanged: func() {},
 	}
 }
@@ -45,7 +52,7 @@ func (bp *Base) Write(index int, input string, optionalStyle ...*style.Style) er
 		return fmt.Errorf("index out of range. index: %d, size: %d", index, bp.Config.Height)
 	}
 	bp.lines[index] = &line.Line{Line: input, Style: sty}
-	bp.renderLine(index)
+	bp.clearLine(index)
 	bp.hasChanged()
 	return nil
 }
@@ -57,7 +64,7 @@ func (bp *Base) WriteMulti(lines []string) error {
 		}
 		bp.lines[i] = &line.Line{Line: lines[i], Style: &style.Style{}}
 	}
-	bp.render()
+	bp.clearAllLines()
 	bp.hasChanged()
 	return nil
 }
@@ -69,14 +76,14 @@ func (bp *Base) WriteMultiStyle(lines []string, sty *style.Style) error {
 		}
 		bp.lines[i] = &line.Line{Line: lines[i], Style: sty}
 	}
-	bp.render()
+	bp.clearAllLines()
 	bp.hasChanged()
 	return nil
 }
 
 func (bp *Base) Clear() {
-	bp.lines = line.NewLines(bp.Config.Height)
-	bp.render()
+	bp.lines = line.NewLines(bp.Config.Height, bp.Config.ContentStyle)
+	bp.clearAllLines()
 	bp.hasChanged()
 }
 
@@ -99,14 +106,13 @@ func (bp *Base) Configuration() *config.Config {
 	return bp.Config
 }
 
-func (bp *Base) render() {
+func (bp *Base) clearAllLines() {
 	for i := range bp.lines {
-		bp.renderLine(i)
+		bp.clearLine(i)
 	}
-	bp.hasChanged()
 }
 
-func (bp *Base) renderLine(index int) {
+func (bp *Base) clearLine(index int) {
 	line := bp.lines[index]
 	line.Line = ansi.Strip(line.Line)
 	bp.lines[index] = line
