@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ecoshub/termium/component/config"
+	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/screen"
 	"github.com/ecoshub/termium/component/style"
@@ -13,14 +14,19 @@ import (
 
 func main() {
 	s, err := screen.New(&screen.Config{
-		DisableCommentPallet: true,
+		CommandPaletteConfig: &palette.Config{
+			Prompt: "> ",
+			Style: &style.Style{
+				ForegroundColor: 83,
+			},
+		},
 	})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	raw := panel.NewRawPanel(&config.Config{
+	mainPanel := panel.NewRawPanel(&config.Config{
 		Width:  80,
 		Height: 24,
 		ContentStyle: &style.Style{
@@ -31,7 +37,7 @@ func main() {
 
 	logPanel := panel.NewStackPanel(&config.Config{
 		Width:  utils.TerminalWith,
-		Height: utils.TerminalHeight - 24,
+		Height: utils.TerminalHeight - 24 - 1,
 		Title:  "Logs:",
 		TitleStyle: &style.Style{
 			ForegroundColor: 195,
@@ -44,7 +50,7 @@ func main() {
 		},
 	})
 
-	posX := (utils.TerminalWith - raw.Config.Width) / 2
+	posX := (utils.TerminalWith - mainPanel.Config.Width) / 2
 
 	memoryPanel := panel.NewStackPanel(&config.Config{
 		Width:  posX - 1,
@@ -61,18 +67,35 @@ func main() {
 		},
 	})
 
-	s.Add(raw, posX, 0)
+	s.Add(mainPanel, posX, 0)
 	s.Add(memoryPanel, 0, 0)
 	s.Add(logPanel, 0, 24)
 
 	index := 0
+	pipeInput := false
 	s.CommandPalette.AttachKeyEventHandler(func(event keyboard.KeyEvent) {
+		if event.Key == keyboard.KeyCtrlD {
+			pipeInput = !pipeInput
+			s.CommandPalette.SetBaseListener(pipeInput)
+			if pipeInput {
+				logPanel.Push(">> input directed to main panel ( use CTRL + D to switch)")
+			} else {
+				logPanel.Push("<< input directed to comment pallet ( use CTRL + D to switch)")
+			}
+		}
+		if !pipeInput {
+			return
+		}
 		input := uint8(event.Key)
 		if event.Key == 0 {
 			input = uint8(event.Rune)
 		}
-		raw.Write(index, input)
+		mainPanel.Write(index, input)
 		index++
+	})
+
+	s.CommandPalette.ListenKeyEventEnter(func(input string) {
+		s.CommandPalette.AddToHistory(input)
 	})
 
 	s.Start()

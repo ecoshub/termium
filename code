@@ -1,0 +1,225 @@
+diff --git a/component/palette/event.go b/component/palette/event.go
+index 0cdeffc..c2adc2b 100644
+--- a/component/palette/event.go
++++ b/component/palette/event.go
+@@ -77,6 +77,10 @@ func (p *Palette) keyPressHandlerCTRL_E() {
+ 
+ func (p *Palette) listenKeyEvents() {
+ 	for event := range p.keyEvents {
++		if p.baseListenerDisable {
++			p.triggerEventHandlers(event)
++			continue
++		}
+ 		switch event.Key {
+ 		case keyboard.KeyEnter:
+ 			p.keyPressHandlerEnter()
+diff --git a/component/palette/line.go b/component/palette/line.go
+index 6151be0..5b1707c 100644
+--- a/component/palette/line.go
++++ b/component/palette/line.go
+@@ -5,12 +5,14 @@ type Line struct {
+ 	cap    int
+ 	index  int
+ 	width  int
++	dirty  bool
+ }
+ 
+ func NewLine(width int) *Line {
+ 	return &Line{
+ 		width:  width,
+ 		buffer: make([]rune, 0, 8),
++		dirty:  true,
+ 	}
+ }
+ 
+@@ -29,9 +31,13 @@ func (l *Line) Backspace() {
+ 	}
+ 	l.cap--
+ 	l.index--
++	l.dirty = true
+ }
+ 
+ func (l *Line) Append(char rune) {
++	if char == 0 {
++		return
++	}
+ 	if l.cap >= l.width {
+ 		return
+ 	}
+@@ -47,6 +53,7 @@ func (l *Line) Append(char rune) {
+ 	}
+ 	l.cap++
+ 	l.index++
++	l.dirty = true
+ }
+ 
+ func (l *Line) Left() bool {
+@@ -70,12 +77,14 @@ func (l *Line) Set(text string) {
+ 	l.buffer = rText
+ 	l.cap = len(rText)
+ 	l.index = len(rText)
++	l.dirty = true
+ }
+ 
+ func (l *Line) Clear() {
+ 	l.buffer = make([]rune, 0, 8)
+ 	l.cap = 0
+ 	l.index = 0
++	l.dirty = true
+ }
+ 
+ func (l *Line) GotoStart() {
+@@ -93,3 +102,11 @@ func (l *Line) GetCursorIndex() int {
+ func (l *Line) String() string {
+ 	return string(l.buffer)
+ }
++
++func (l *Line) IsDirty() bool {
++	return l.dirty
++}
++
++func (l *Line) Rendered() {
++	l.dirty = false
++}
+diff --git a/component/palette/palette.go b/component/palette/palette.go
+index c4261fa..1efde03 100644
+--- a/component/palette/palette.go
++++ b/component/palette/palette.go
+@@ -30,6 +30,8 @@ type Palette struct {
+ 	eventHandler func(eventCode EventCode, input string)
+ 	// eventHandlers it triggers when there is a change occur
+ 	eventHandlers []func(event keyboard.KeyEvent)
++	// disable listener
++	baseListenerDisable bool
+ }
+ 
+ func New(cpc *Config) (*Palette, error) {
+@@ -94,3 +96,14 @@ func (p *Palette) Prompt() string {
+ func (p *Palette) Input() string {
+ 	return p.PromptLine.String()
+ }
++
++// SetBaseListener disables or enables base listener that responsible for write
++// and interpret all input in to command pallet system.
++func (p *Palette) SetBaseListener(enable bool) {
++	p.baseListenerDisable = enable
++	if enable {
++		print(ansi.MakeCursorVisible)
++	} else {
++		print(ansi.MakeCursorInvisible)
++	}
++}
+diff --git a/component/screen/render.go b/component/screen/render.go
+index 74b6bee..4aec400 100644
+--- a/component/screen/render.go
++++ b/component/screen/render.go
+@@ -107,6 +107,10 @@ func (r *Renderer) RenderCommandPalette() {
+ 		return
+ 	}
+ 
++	if !r.commandPalette.PromptLine.IsDirty() {
++		return
++	}
++
+ 	print(ansi.MakeCursorInvisible)
+ 	defer print(ansi.MakeCursorVisible)
+ 
+@@ -122,5 +126,6 @@ func (r *Renderer) RenderCommandPalette() {
+ 	print(r.commandPalette.Prompt())
+ 	print(r.commandPalette.Input())
+ 	ansi.GotoRowAndColumn(utils.TerminalHeight, len(r.commandPalette.Config.Prompt)+r.commandPalette.PromptLine.GetCursorIndex()+1)
++	r.commandPalette.PromptLine.Rendered()
+ 
+ }
+diff --git a/example/raw/main.go b/example/raw/main.go
+index 0e283d9..48a16bf 100644
+--- a/example/raw/main.go
++++ b/example/raw/main.go
+@@ -4,6 +4,7 @@ import (
+ 	"fmt"
+ 
+ 	"github.com/ecoshub/termium/component/config"
++	"github.com/ecoshub/termium/component/palette"
+ 	"github.com/ecoshub/termium/component/panel"
+ 	"github.com/ecoshub/termium/component/screen"
+ 	"github.com/ecoshub/termium/component/style"
+@@ -13,14 +14,19 @@ import (
+ 
+ func main() {
+ 	s, err := screen.New(&screen.Config{
+-		DisableCommentPallet: true,
++		CommandPaletteConfig: &palette.Config{
++			Prompt: "> ",
++			Style: &style.Style{
++				ForegroundColor: 83,
++			},
++		},
+ 	})
+ 	if err != nil {
+ 		fmt.Println(err)
+ 		return
+ 	}
+ 
+-	raw := panel.NewRawPanel(&config.Config{
++	mainPanel := panel.NewRawPanel(&config.Config{
+ 		Width:  80,
+ 		Height: 24,
+ 		ContentStyle: &style.Style{
+@@ -31,7 +37,7 @@ func main() {
+ 
+ 	logPanel := panel.NewStackPanel(&config.Config{
+ 		Width:  utils.TerminalWith,
+-		Height: utils.TerminalHeight - 24,
++		Height: utils.TerminalHeight - 24 - 1,
+ 		Title:  "Logs:",
+ 		TitleStyle: &style.Style{
+ 			ForegroundColor: 195,
+@@ -44,7 +50,7 @@ func main() {
+ 		},
+ 	})
+ 
+-	posX := (utils.TerminalWith - raw.Config.Width) / 2
++	posX := (utils.TerminalWith - mainPanel.Config.Width) / 2
+ 
+ 	memoryPanel := panel.NewStackPanel(&config.Config{
+ 		Width:  posX - 1,
+@@ -61,20 +67,37 @@ func main() {
+ 		},
+ 	})
+ 
+-	s.Add(raw, posX, 0)
++	s.Add(mainPanel, posX, 0)
+ 	s.Add(memoryPanel, 0, 0)
+ 	s.Add(logPanel, 0, 24)
+ 
+ 	index := 0
++	pipeInput := false
+ 	s.CommandPalette.AttachKeyEventHandler(func(event keyboard.KeyEvent) {
++		if event.Key == keyboard.KeyCtrlD {
++			pipeInput = !pipeInput
++			s.CommandPalette.SetBaseListener(pipeInput)
++			if pipeInput {
++				logPanel.Push(">> input directed to main panel ( use CTRL + D to switch)")
++			} else {
++				logPanel.Push("<< input directed to comment pallet ( use CTRL + D to switch)")
++			}
++		}
++		if !pipeInput {
++			return
++		}
+ 		input := uint8(event.Key)
+ 		if event.Key == 0 {
+ 			input = uint8(event.Rune)
+ 		}
+-		raw.Write(index, input)
++		mainPanel.Write(index, input)
+ 		index++
+ 	})
+ 
++	s.CommandPalette.ListenKeyEventEnter(func(input string) {
++		s.CommandPalette.AddToHistory(input)
++	})
++
+ 	s.Start()
+ 
+ }

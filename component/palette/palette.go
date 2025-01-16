@@ -30,6 +30,8 @@ type Palette struct {
 	eventHandler func(eventCode EventCode, input string)
 	// eventHandlers it triggers when there is a change occur
 	eventHandlers []func(event keyboard.KeyEvent)
+	// disable listener
+	baseListenerDisable bool
 }
 
 func New(cpc *Config) (*Palette, error) {
@@ -93,4 +95,15 @@ func (p *Palette) Prompt() string {
 // Input get input line
 func (p *Palette) Input() string {
 	return p.PromptLine.String()
+}
+
+// SetBaseListener disables or enables base listener that responsible for write
+// and interpret all input in to command pallet system.
+func (p *Palette) SetBaseListener(enable bool) {
+	p.baseListenerDisable = enable
+	if enable {
+		print(ansi.MakeCursorVisible)
+	} else {
+		print(ansi.MakeCursorInvisible)
+	}
 }

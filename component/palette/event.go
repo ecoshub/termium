@@ -77,6 +77,10 @@ func (p *Palette) keyPressHandlerCTRL_E() {
 
 func (p *Palette) listenKeyEvents() {
 	for event := range p.keyEvents {
+		if p.baseListenerDisable {
+			p.triggerEventHandlers(event)
+			continue
+		}
 		switch event.Key {
 		case keyboard.KeyEnter:
 			p.keyPressHandlerEnter()

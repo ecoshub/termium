@@ -107,6 +107,10 @@ func (r *Renderer) RenderCommandPalette() {
 		return
 	}
 
+	if !r.commandPalette.PromptLine.IsDirty() {
+		return
+	}
+
 	print(ansi.MakeCursorInvisible)
 	defer print(ansi.MakeCursorVisible)
 
@@ -122,5 +126,6 @@ func (r *Renderer) RenderCommandPalette() {
 	print(r.commandPalette.Prompt())
 	print(r.commandPalette.Input())
 	ansi.GotoRowAndColumn(utils.TerminalHeight, len(r.commandPalette.Config.Prompt)+r.commandPalette.PromptLine.GetCursorIndex()+1)
+	r.commandPalette.PromptLine.Rendered()
 
 }

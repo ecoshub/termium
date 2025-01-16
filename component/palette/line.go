@@ -5,12 +5,14 @@ type Line struct {
 	cap    int
 	index  int
 	width  int
+	dirty  bool
 }
 
 func NewLine(width int) *Line {
 	return &Line{
 		width:  width,
 		buffer: make([]rune, 0, 8),
+		dirty:  true,
 	}
 }
 
@@ -29,9 +31,13 @@ func (l *Line) Backspace() {
 	}
 	l.cap--
 	l.index--
+	l.dirty = true
 }
 
 func (l *Line) Append(char rune) {
+	if char == 0 {
+		return
+	}
 	if l.cap >= l.width {
 		return
 	}
@@ -47,6 +53,7 @@ func (l *Line) Append(char rune) {
 	}
 	l.cap++
 	l.index++
+	l.dirty = true
 }
 
 func (l *Line) Left() bool {
@@ -70,12 +77,14 @@ func (l *Line) Set(text string) {
 	l.buffer = rText
 	l.cap = len(rText)
 	l.index = len(rText)
+	l.dirty = true
 }
 
 func (l *Line) Clear() {
 	l.buffer = make([]rune, 0, 8)
 	l.cap = 0
 	l.index = 0
+	l.dirty = true
 }
 
 func (l *Line) GotoStart() {
@@ -92,4 +101,12 @@ func (l *Line) GetCursorIndex() int {
 
 func (l *Line) String() string {
 	return string(l.buffer)
+}
+
+func (l *Line) IsDirty() bool {
+	return l.dirty
+}
+
+func (l *Line) Rendered() {
+	l.dirty = false
 }
