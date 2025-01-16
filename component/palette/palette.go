@@ -13,6 +13,8 @@ type Config struct {
 	Prompt string
 	// Style prompt style
 	Style *style.Style
+	// triggers os.Exit() if set true when pressed
+	PressEscapeToExit bool
 }
 
 type Palette struct {
@@ -26,8 +28,8 @@ type Palette struct {
 	keyEvents <-chan keyboard.KeyEvent
 	// eventHandler event handler function
 	eventHandler func(eventCode EventCode, input string)
-	// changeHandler it triggers when there is a change occur
-	changeHandler func()
+	// eventHandlers it triggers when there is a change occur
+	eventHandlers []func(event keyboard.KeyEvent)
 }
 
 func New(cpc *Config) (*Palette, error) {
@@ -39,10 +41,11 @@ func New(cpc *Config) (*Palette, error) {
 	cpc.Prompt = ansi.Strip(cpc.Prompt)
 
 	p := &Palette{
-		Config:     cpc,
-		keyEvents:  keyEvents,
-		history:    history.New(history.DefaultCapacity),
-		PromptLine: NewLine(utils.TerminalWith - len(cpc.Prompt)),
+		Config:        cpc,
+		keyEvents:     keyEvents,
+		history:       history.New(history.DefaultCapacity),
+		PromptLine:    NewLine(utils.TerminalWith - len(cpc.Prompt)),
+		eventHandlers: make([]func(event keyboard.KeyEvent), 0, 2),
 	}
 
 	go p.listenKeyEvents()
@@ -59,13 +62,13 @@ func (p *Palette) AddToHistory(line string) {
 	p.history.Add(line)
 }
 
-// AttachChangeHandler attach change handler that will trigger when command pallet has any change
+// AttachKeyEventHandler attach change handler that will trigger when command pallet has any change
 // including 'typing' and other key interactions
-func (p *Palette) AttachChangeHandler(f func()) {
+func (p *Palette) AttachKeyEventHandler(f func(event keyboard.KeyEvent)) {
 	if f == nil {
 		return
 	}
-	p.changeHandler = f
+	p.eventHandlers = append(p.eventHandlers, f)
 }
 
 // ListenKeyEventEnter listen for key event 'Enter'

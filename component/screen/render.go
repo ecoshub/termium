@@ -19,7 +19,9 @@ func (s *Screen) Start() {
 	s.renderer.RenderCommandPalette()
 	s.started = true
 
-	utils.WaitInterrupt(nil)
+	utils.WaitInterrupt(func() {
+		print(ansi.MakeCursorVisible)
+	})
 }
 
 func (r *Renderer) Render() {
@@ -101,6 +103,10 @@ func (r *Renderer) readComponent(index int) {
 }
 
 func (r *Renderer) RenderCommandPalette() {
+	if !r.renderCommandPallet {
+		return
+	}
+
 	print(ansi.MakeCursorInvisible)
 	defer print(ansi.MakeCursorVisible)
 

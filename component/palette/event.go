@@ -76,37 +76,38 @@ func (p *Palette) keyPressHandlerCTRL_E() {
 }
 
 func (p *Palette) listenKeyEvents() {
-	for {
-		select {
-		case event := <-p.keyEvents:
-			switch event.Key {
-			case keyboard.KeyEnter:
-				p.keyPressHandlerEnter()
-			case keyboard.KeyArrowUp:
-				p.keyPressHandlerArrowUp()
-			case keyboard.KeyArrowDown:
-				p.keyPressHandlerArrowDown()
-			case keyboard.KeyArrowLeft:
-				p.keyPressHandlerArrowLeft()
-			case keyboard.KeyArrowRight:
-				p.keyPressHandlerArrowRight()
-			case keyboard.KeySpace:
-				p.keyPressHandlerSpace()
-			case keyboard.KeyBackspace, keyboard.KeyBackspace2:
-				p.keyPressHandlerBackspace()
-			case keyboard.KeyEsc:
+	for event := range p.keyEvents {
+		switch event.Key {
+		case keyboard.KeyEnter:
+			p.keyPressHandlerEnter()
+		case keyboard.KeyArrowUp:
+			p.keyPressHandlerArrowUp()
+		case keyboard.KeyArrowDown:
+			p.keyPressHandlerArrowDown()
+		case keyboard.KeyArrowLeft:
+			p.keyPressHandlerArrowLeft()
+		case keyboard.KeyArrowRight:
+			p.keyPressHandlerArrowRight()
+		case keyboard.KeySpace:
+			p.keyPressHandlerSpace()
+		case keyboard.KeyBackspace, keyboard.KeyBackspace2:
+			p.keyPressHandlerBackspace()
+		case keyboard.KeyEsc:
+			if p.Config.PressEscapeToExit {
+				ResetTerm()
 				os.Exit(0)
-			case keyboard.KeyCtrlC:
-				os.Exit(0)
-			case keyboard.KeyCtrlA:
-				p.keyPressHandlerCTRL_A()
-			case keyboard.KeyCtrlE:
-				p.keyPressHandlerCTRL_E()
-			default:
-				p.keyPressHandlerDefaultKeys(event.Rune)
 			}
-			p.changeHandler()
+		case keyboard.KeyCtrlC:
+			ResetTerm()
+			os.Exit(0)
+		case keyboard.KeyCtrlA:
+			p.keyPressHandlerCTRL_A()
+		case keyboard.KeyCtrlE:
+			p.keyPressHandlerCTRL_E()
+		default:
+			p.keyPressHandlerDefaultKeys(event.Rune)
 		}
+		p.triggerEventHandlers(event)
 	}
 }
 
@@ -115,4 +116,18 @@ func (p *Palette) runEvent(eventCode EventCode, input string) {
 		return
 	}
 	p.eventHandler(eventCode, input)
+}
+
+func (p *Palette) triggerEventHandlers(event keyboard.KeyEvent) {
+	for _, f := range p.eventHandlers {
+		if f == nil {
+			continue
+		}
+		f(event)
+	}
+}
+
+func ResetTerm() {
+	print(ansi.ResetAllModes)
+	print(ansi.MakeCursorVisible)
 }

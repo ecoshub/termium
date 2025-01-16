@@ -52,14 +52,11 @@ func FixedSizeLine(line string, limit int) []rune {
 func WaitInterrupt(interruptFunc func()) {
 	chanInterrupt := make(chan os.Signal, 1)
 	signal.Notify(chanInterrupt, os.Interrupt)
-	for {
-		select {
-		case <-chanInterrupt:
-			log.Print("Interrupted. Exiting...")
-			if interruptFunc != nil {
-				interruptFunc()
-			}
-			os.Exit(1)
+	for range chanInterrupt {
+		log.Print("Interrupted. Exiting...")
+		if interruptFunc != nil {
+			interruptFunc()
 		}
+		os.Exit(1)
 	}
 }

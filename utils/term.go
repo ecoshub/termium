@@ -1,6 +1,6 @@
 package utils
 
-import "golang.org/x/crypto/ssh/terminal"
+import "golang.org/x/term"
 
 var (
 	TerminalWith   int = 0
@@ -9,7 +9,7 @@ var (
 
 func init() {
 	var err error
-	TerminalWith, TerminalHeight, err = terminal.GetSize(0)
+	TerminalWith, TerminalHeight, err = term.GetSize(0)
 	if err != nil {
 		panic(err)
 	}

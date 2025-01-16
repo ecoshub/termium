@@ -6,15 +6,18 @@ import (
 	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils/ansi"
+	"github.com/eiannone/keyboard"
 )
 
 type Config struct {
+	DisableCommentPallet bool
 	CommandPaletteConfig *palette.Config
 }
 type Renderer struct {
 	sync.Mutex
-	components     []*Component
-	commandPalette *palette.Palette
+	components          []*Component
+	commandPalette      *palette.Palette
+	renderCommandPallet bool
 }
 
 type Screen struct {
@@ -38,11 +41,12 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 		Config:         cfg,
 		CommandPalette: cp,
 		renderer: &Renderer{
-			components:     make([]*Component, 0, 2),
-			commandPalette: cp,
+			components:          make([]*Component, 0, 2),
+			commandPalette:      cp,
+			renderCommandPallet: !cfg.DisableCommentPallet,
 		},
 	}
-	s.CommandPalette.AttachChangeHandler(func() { s.renderer.RenderCommandPalette() })
+	s.CommandPalette.AttachKeyEventHandler(func(event keyboard.KeyEvent) { s.renderer.RenderCommandPalette() })
 	return s, nil
 }
 
