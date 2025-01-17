@@ -8,7 +8,6 @@ import (
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/screen"
 	"github.com/ecoshub/termium/component/style"
-	"github.com/ecoshub/termium/utils"
 )
 
 func main() {
@@ -34,7 +33,7 @@ func main() {
 		},
 	})
 
-	s.Add(recordingPanel, utils.TerminalWith-1, 0)
+	s.Add(recordingPanel, s.TerminalWidth-1, 0)
 
 	recordingPanel.Write(0, " ")
 

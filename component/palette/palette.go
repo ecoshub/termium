@@ -42,11 +42,16 @@ func New(cpc *Config) (*Palette, error) {
 
 	cpc.Prompt = ansi.Strip(cpc.Prompt)
 
+	width, _, err := utils.GetTerminalSize()
+	if err != nil {
+		return nil, err
+	}
+
 	p := &Palette{
 		Config:        cpc,
 		keyEvents:     keyEvents,
 		history:       history.New(history.DefaultCapacity),
-		PromptLine:    NewLine(utils.TerminalWith - len(cpc.Prompt)),
+		PromptLine:    NewLine(width - len(cpc.Prompt)),
 		eventHandlers: make([]func(event keyboard.KeyEvent), 0, 2),
 	}
 

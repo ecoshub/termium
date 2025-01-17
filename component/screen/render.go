@@ -34,7 +34,7 @@ func (r *Renderer) Render() {
 }
 
 func (s *Screen) Print(input string) {
-	ansi.GotoRowAndColumn(utils.TerminalHeight-1, 0)
+	ansi.GotoRowAndColumn(s.TerminalHeight-1, 0)
 	println()
 	print(ansi.EraseLine)
 	println(input)
@@ -43,7 +43,7 @@ func (s *Screen) Print(input string) {
 }
 
 func (s *Screen) AppendToLastLine(input string) {
-	ansi.GotoRowAndColumn(utils.TerminalHeight-1, len(ansi.Strip(s.lineBuffer))+1)
+	ansi.GotoRowAndColumn(s.TerminalHeight-1, len(ansi.Strip(s.lineBuffer))+1)
 	s.lineBuffer += input
 	println(input)
 	s.renderer.RenderCommandPalette()
@@ -117,7 +117,7 @@ func (r *Renderer) RenderCommandPalette() {
 	r.Lock()
 	defer r.Unlock()
 
-	ansi.GotoRowAndColumn(utils.TerminalHeight, 0)
+	ansi.GotoRowAndColumn(r.terminalHeight, 0)
 	if r.commandPalette == nil {
 		return
 	}
@@ -125,7 +125,7 @@ func (r *Renderer) RenderCommandPalette() {
 	print(ansi.EraseLine)
 	print(r.commandPalette.Prompt())
 	print(r.commandPalette.Input())
-	ansi.GotoRowAndColumn(utils.TerminalHeight, len(r.commandPalette.Config.Prompt)+r.commandPalette.PromptLine.GetCursorIndex()+1)
+	ansi.GotoRowAndColumn(r.terminalHeight, len(r.commandPalette.Config.Prompt)+r.commandPalette.PromptLine.GetCursorIndex()+1)
 	r.commandPalette.PromptLine.Rendered()
 
 }

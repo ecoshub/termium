@@ -5,6 +5,7 @@ import (
 
 	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/style"
+	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 	"github.com/eiannone/keyboard"
 )
@@ -13,8 +14,11 @@ type Config struct {
 	DisableCommentPallet bool
 	CommandPaletteConfig *palette.Config
 }
+
 type Renderer struct {
 	sync.Mutex
+	terminalWidth       int
+	terminalHeight      int
 	components          []*Component
 	commandPalette      *palette.Palette
 	renderCommandPallet bool
@@ -23,12 +27,18 @@ type Renderer struct {
 type Screen struct {
 	Config         *Config
 	CommandPalette *palette.Palette
+	TerminalWidth  int
+	TerminalHeight int
 	lineBuffer     string
 	renderer       *Renderer
 	started        bool
 }
 
 func New(optionalConfig ...*Config) (*Screen, error) {
+	width, height, err := utils.GetTerminalSize()
+	if err != nil {
+		return nil, err
+	}
 	cfg, err := resolveConfig(optionalConfig)
 	if err != nil {
 		return nil, err
@@ -40,7 +50,11 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 	s := &Screen{
 		Config:         cfg,
 		CommandPalette: cp,
+		TerminalWidth:  width,
+		TerminalHeight: height,
 		renderer: &Renderer{
+			terminalWidth:       width,
+			terminalHeight:      height,
 			components:          make([]*Component, 0, 2),
 			commandPalette:      cp,
 			renderCommandPallet: !cfg.DisableCommentPallet,

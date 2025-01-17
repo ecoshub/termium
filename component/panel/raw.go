@@ -13,12 +13,12 @@ import (
 var _ renderable.Renderable = &Raw{}
 
 const (
-	DefaultDefaultChar byte = ' '
+	DefaultDefaultChar rune = ' '
 )
 
 type Raw struct {
 	*Base
-	defaultChar byte
+	defaultChar rune
 }
 
 func NewRawPanel(conf *config.Config) *Raw {
@@ -41,7 +41,7 @@ func NewRawPanel(conf *config.Config) *Raw {
 	}
 }
 
-func (raw *Raw) Write(index int, input uint8, optionalStyle ...*style.Style) error {
+func (raw *Raw) Write(index int, input rune, optionalStyle ...*style.Style) error {
 	sty := raw.Config.ContentStyle
 	if len(optionalStyle) > 0 {
 		sty = optionalStyle[0]
@@ -51,7 +51,7 @@ func (raw *Raw) Write(index int, input uint8, optionalStyle ...*style.Style) err
 	if row >= (raw.Config.Height) {
 		return fmt.Errorf("index out of range. index: %d, size: %d", index, raw.Config.Height)
 	}
-	lineAsBytes := []byte(raw.lines[row].Line)
+	lineAsBytes := []rune(raw.lines[row].Line)
 	buffer := makeEmptyByteLine(raw.Config.Width, raw.defaultChar)
 	copy(buffer[:], lineAsBytes[:])
 	buffer[column] = input
@@ -59,13 +59,6 @@ func (raw *Raw) Write(index int, input uint8, optionalStyle ...*style.Style) err
 	raw.cleanLine(row)
 	raw.hasChanged()
 	return nil
-}
-
-func (raw *Raw) Fill(char byte) {
-	for i := range raw.lines {
-		buffer := makeEmptyByteLine(raw.Config.Width, char)
-		raw.lines[i] = &line.Line{Line: string(buffer), Style: raw.Config.ContentStyle}
-	}
 }
 
 func (r *Raw) Configuration() *config.Config {
@@ -105,8 +98,8 @@ func (raw *Raw) cleanLine(index int) {
 	raw.lines[index] = line
 }
 
-func makeEmptyByteLine(size int, char byte) []byte {
-	buffer := make([]byte, size)
+func makeEmptyByteLine(size int, char rune) []rune {
+	buffer := make([]rune, size)
 	for i := range buffer {
 		buffer[i] = char
 	}

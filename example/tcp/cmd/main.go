@@ -12,7 +12,6 @@ import (
 	"github.com/ecoshub/termium/component/screen"
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/example/tcp/core"
-	"github.com/ecoshub/termium/utils"
 )
 
 func main() {
@@ -33,8 +32,8 @@ func main() {
 
 	// lets create a stack panel to use as a command history
 	commPanel := panel.NewStackPanel(&config.Config{
-		Width:  utils.TerminalWith,
-		Height: utils.TerminalHeight - 1,
+		Width:  s.TerminalWidth,
+		Height: s.TerminalHeight - 1,
 		TitleStyle: &style.Style{
 			BackgroundColor: 60,
 		},
@@ -44,14 +43,14 @@ func main() {
 	})
 
 	infoPanel := panel.NewStackPanel(&config.Config{
-		Width:        utils.TerminalWith,
+		Width:        s.TerminalWidth,
 		Height:       1,
 		ContentStyle: style.DefaultStyleError,
 	})
 
 	// lets add this panel to top left corner (0,0)
 	s.Add(commPanel, 0, 0)
-	s.Add(infoPanel, 0, utils.TerminalHeight-2)
+	s.Add(infoPanel, 0, s.TerminalHeight-2)
 
 	go func() {
 		for range time.NewTicker(time.Second * 10).C {

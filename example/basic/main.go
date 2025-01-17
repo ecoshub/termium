@@ -8,7 +8,6 @@ import (
 	"github.com/ecoshub/termium/component/panel"
 	"github.com/ecoshub/termium/component/screen"
 	"github.com/ecoshub/termium/component/style"
-	"github.com/ecoshub/termium/utils"
 )
 
 func main() {
@@ -29,7 +28,7 @@ func main() {
 	// lets create a stack panel to use as a command history
 	historyPanel := panel.NewStackPanel(&config.Config{
 		Width:  100,
-		Height: utils.TerminalHeight - 2,
+		Height: s.TerminalHeight - 2,
 		Title:  "History:",
 		ContentStyle: &style.Style{
 			ForegroundColor: 195,
