@@ -26,7 +26,6 @@ func NewBasePanel(conf *config.Config) *Base {
 	if conf.Height < 1 {
 		panic("panels height can not be less than 1 row")
 	}
-	height := conf.Height
 	if conf.RenderTitle {
 		conf.Height--
 	}
@@ -38,7 +37,7 @@ func NewBasePanel(conf *config.Config) *Base {
 	}
 	return &Base{
 		Config:     conf,
-		lines:      line.NewLines(height, conf.ContentStyle),
+		lines:      line.NewLines(conf.Height, conf.ContentStyle),
 		hasChanged: func() {},
 	}
 }

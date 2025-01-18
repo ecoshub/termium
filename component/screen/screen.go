@@ -21,6 +21,17 @@ type Config struct {
 	FPSLimit             int
 }
 
+type Screen struct {
+	Config         *Config
+	CommandPalette *palette.Palette
+	TerminalWidth  int
+	TerminalHeight int
+	lineBuffer     string
+	renderer       *Renderer
+	started        bool
+	fl             *utils.FileLogger
+}
+
 type Renderer struct {
 	sync.Mutex
 	terminalWidth          int
@@ -32,16 +43,7 @@ type Renderer struct {
 	renderCommandPallet    bool
 	lastRender             time.Time
 	maxRenderTimeGap       time.Duration
-}
-
-type Screen struct {
-	Config         *Config
-	CommandPalette *palette.Palette
-	TerminalWidth  int
-	TerminalHeight int
-	lineBuffer     string
-	renderer       *Renderer
-	started        bool
+	fl                     *utils.FileLogger
 }
 
 func New(optionalConfig ...*Config) (*Screen, error) {
@@ -57,11 +59,13 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 	if err != nil {
 		return nil, err
 	}
+	fl := utils.NewFileLogger("debug.log")
 	s := &Screen{
 		Config:         cfg,
 		CommandPalette: cp,
 		TerminalWidth:  width,
 		TerminalHeight: height,
+		fl:             fl,
 		renderer: &Renderer{
 			terminalWidth:          width,
 			terminalHeight:         height,
@@ -71,9 +75,12 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 			maxRenderTimeGap:       time.Second / time.Duration(cfg.FPSLimit),
 			componentRendered:      make(map[int]bool),
 			componentTitleRenderer: make(map[int]bool),
+			fl:                     fl,
 		},
 	}
-	s.CommandPalette.AttachKeyEventHandler(func(event keyboard.KeyEvent) { s.renderer.RenderCommandPalette() })
+	s.CommandPalette.AttachKeyEventHandler(func(event keyboard.KeyEvent) {
+		s.renderer.RenderCommandPalette()
+	})
 	return s, nil
 }
 

@@ -34,12 +34,13 @@ func (r *Renderer) Render() {
 		defer r.setLastRender()
 	}
 
-	print(ansi.MakeCursorInvisible)
-
 	r.Lock()
 	defer r.Unlock()
 
-	r.renderCore()
+	print(ansi.MakeCursorInvisible)
+	defer print(ansi.MakeCursorVisible)
+
+	r.render()
 }
 
 func (s *Screen) Print(input string) {
@@ -58,24 +59,21 @@ func (s *Screen) AppendToLastLine(input string) {
 	s.renderer.RenderCommandPalette()
 }
 
-func (r *Renderer) renderCore() {
-	r.render()
-}
-
 func (r *Renderer) render() {
 	print(ansi.SaveCursorPos)
 	defer print(ansi.RestoreCursorPos)
 
-	r.readComponents()
+	r.renderComponents()
 }
 
-func (r *Renderer) readComponents() {
+func (r *Renderer) renderComponents() {
 	for i := range r.components {
-		r.readComponent(i)
+		r.RenderComponent(i)
 	}
 }
 
-func (r *Renderer) readComponent(index int) {
+func (r *Renderer) RenderComponent(index int) {
+
 	c := r.components[index]
 
 	if r.componentRendered[index] {
@@ -98,7 +96,7 @@ func (r *Renderer) readComponent(index int) {
 
 			// go to title position again to write title
 			ansi.GotoRowAndColumn(c.posY+1, c.posX)
-			line := ansi.ClearLine(panelConfig.Title, panelConfig.Width)
+			line := ansi.ClearLine(panelConfig.Title)
 			missingChars := panelConfig.Width - len(line)
 			for i := 0; i < missingChars; i++ {
 				line += " "
@@ -112,7 +110,7 @@ func (r *Renderer) readComponent(index int) {
 
 	for i := 0; i < panelConfig.Height; i++ {
 		ansi.GotoRowAndColumn(c.posY+i+offset+1, c.posX)
-		line := ansi.ClearLine(string(buffer[i].Line), panelConfig.Width)
+		line := ansi.ClearLine(string(buffer[i].Line))
 		line = string(utils.FixedSizeLine(line, panelConfig.Width))
 		line = style.SetStyle(line, buffer[i].Style)
 		print(line)
@@ -128,9 +126,6 @@ func (r *Renderer) RenderCommandPalette() {
 	if !r.commandPalette.PromptLine.IsDirty() {
 		return
 	}
-
-	print(ansi.MakeCursorInvisible)
-	defer print(ansi.MakeCursorVisible)
 
 	r.Lock()
 	defer r.Unlock()

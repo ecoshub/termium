@@ -27,7 +27,7 @@ func CutUnicode(line string, limit int) string {
 	s := strings.Builder{}
 	c := 0
 	for _, r := range line {
-		if c > limit {
+		if c >= limit {
 			break
 		}
 		s.WriteRune(r)
