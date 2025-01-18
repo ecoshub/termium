@@ -60,7 +60,7 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 			minRenderTimeGap:       time.Second / time.Duration(cfg.FPSLimit),
 			componentRendered:      make(map[int]bool),
 			componentTitleRenderer: make(map[int]bool),
-			queue:                  make(chan struct{}, 256),
+			queue:                  make(chan struct{}, 1024),
 			fl:                     fl,
 		},
 	}

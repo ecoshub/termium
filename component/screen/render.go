@@ -29,6 +29,13 @@ func (r *Renderer) Routine() {
 	for range t.C {
 		<-r.queue
 		r.render()
+
+		// empty the queue and add one
+		for i := 0; i < len(r.queue); i++ {
+			<-r.queue
+		}
+		r.componentRendered = map[int]bool{}
+		r.queue <- struct{}{}
 	}
 }
 

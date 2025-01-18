@@ -86,7 +86,6 @@ func main() {
 		switch input {
 		case "clear":
 			sp.Clear()
-			sp1.Clear()
 		default:
 			sp.Push(input)
 			sp1.Push(input)
