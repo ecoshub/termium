@@ -1,7 +1,6 @@
 package screen
 
 import (
-	"sync"
 	"time"
 
 	"github.com/ecoshub/termium/component/palette"
@@ -32,20 +31,6 @@ type Screen struct {
 	fl             *utils.FileLogger
 }
 
-type Renderer struct {
-	sync.Mutex
-	terminalWidth          int
-	terminalHeight         int
-	components             []*Component
-	componentRendered      map[int]bool
-	componentTitleRenderer map[int]bool
-	commandPalette         *palette.Palette
-	renderCommandPallet    bool
-	lastRender             time.Time
-	maxRenderTimeGap       time.Duration
-	fl                     *utils.FileLogger
-}
-
 func New(optionalConfig ...*Config) (*Screen, error) {
 	width, height, err := utils.GetTerminalSize()
 	if err != nil {
@@ -72,9 +57,10 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 			components:             make([]*Component, 0, 2),
 			commandPalette:         cp,
 			renderCommandPallet:    !cfg.DisableCommentPallet,
-			maxRenderTimeGap:       time.Second / time.Duration(cfg.FPSLimit),
+			minRenderTimeGap:       time.Second / time.Duration(cfg.FPSLimit),
 			componentRendered:      make(map[int]bool),
 			componentTitleRenderer: make(map[int]bool),
+			queue:                  make(chan struct{}, 256),
 			fl:                     fl,
 		},
 	}
@@ -82,6 +68,41 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 		s.renderer.RenderCommandPalette()
 	})
 	return s, nil
+}
+
+func (s *Screen) Start() {
+	if s.started {
+		return
+	}
+
+	if len(s.renderer.components) != 0 {
+		print(ansi.ClearScreen)
+		s.renderer.Render()
+	}
+
+	s.renderer.RenderCommandPalette()
+	go s.renderer.Routine()
+	s.started = true
+
+	utils.WaitInterrupt(func() {
+		print(ansi.MakeCursorVisible)
+	})
+}
+
+func (s *Screen) Print(input string) {
+	ansi.GotoRowAndColumn(s.TerminalHeight-1, 0)
+	println()
+	print(ansi.EraseLine)
+	println(input)
+	s.lineBuffer = input
+	s.renderer.RenderCommandPalette()
+}
+
+func (s *Screen) AppendToLastLine(input string) {
+	ansi.GotoRowAndColumn(s.TerminalHeight-1, len(ansi.Strip(s.lineBuffer))+1)
+	s.lineBuffer += input
+	println(input)
+	s.renderer.RenderCommandPalette()
 }
 
 func resolveConfig(optionalConfig []*Config) (*Config, error) {

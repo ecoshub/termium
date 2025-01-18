@@ -41,7 +41,7 @@ func (s *Screen) Add(p renderable.Renderable, posX, posY int) {
 	s.renderer.components = append(s.renderer.components, &Component{renderable: p, posX: posX, posY: posY})
 	index := len(s.renderer.components) - 1
 	p.ListenChangeHandler(func() {
-		s.renderer.componentRendered[index] = false
+		s.renderer.setRenderedLock(index, false)
 		s.renderer.Render()
 	})
 }

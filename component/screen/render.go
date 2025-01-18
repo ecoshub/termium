@@ -1,65 +1,48 @@
 package screen
 
 import (
+	"sync"
 	"time"
 
+	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
 )
 
-func (s *Screen) Start() {
-	if s.started {
-		return
+type Renderer struct {
+	sync.Mutex
+	terminalWidth          int
+	terminalHeight         int
+	components             []*Component
+	componentRendered      map[int]bool
+	componentTitleRenderer map[int]bool
+	commandPalette         *palette.Palette
+	renderCommandPallet    bool
+	minRenderTimeGap       time.Duration
+	queue                  chan struct{}
+	fl                     *utils.FileLogger
+}
+
+func (r *Renderer) Routine() {
+	t := time.NewTicker(r.minRenderTimeGap)
+	for range t.C {
+		<-r.queue
+		r.render()
 	}
-
-	if len(s.renderer.components) != 0 {
-		print(ansi.ClearScreen)
-		s.renderer.Render()
-	}
-
-	s.renderer.RenderCommandPalette()
-	s.started = true
-
-	utils.WaitInterrupt(func() {
-		print(ansi.MakeCursorVisible)
-	})
 }
 
 func (r *Renderer) Render() {
-	if r.maxRenderTimeGap != 0 {
-		if r.sinceLastRender() < r.maxRenderTimeGap {
-			return
-		}
-		defer r.setLastRender()
-	}
+	r.queue <- struct{}{}
+}
 
+func (r *Renderer) render() {
 	r.Lock()
 	defer r.Unlock()
 
 	print(ansi.MakeCursorInvisible)
 	defer print(ansi.MakeCursorVisible)
 
-	r.render()
-}
-
-func (s *Screen) Print(input string) {
-	ansi.GotoRowAndColumn(s.TerminalHeight-1, 0)
-	println()
-	print(ansi.EraseLine)
-	println(input)
-	s.lineBuffer = input
-	s.renderer.RenderCommandPalette()
-}
-
-func (s *Screen) AppendToLastLine(input string) {
-	ansi.GotoRowAndColumn(s.TerminalHeight-1, len(ansi.Strip(s.lineBuffer))+1)
-	s.lineBuffer += input
-	println(input)
-	s.renderer.RenderCommandPalette()
-}
-
-func (r *Renderer) render() {
 	print(ansi.SaveCursorPos)
 	defer print(ansi.RestoreCursorPos)
 
@@ -143,10 +126,9 @@ func (r *Renderer) RenderCommandPalette() {
 
 }
 
-func (r *Renderer) setLastRender() {
-	r.lastRender = time.Now()
-}
+func (r *Renderer) setRenderedLock(index int, enable bool) {
+	r.Lock()
+	defer r.Unlock()
 
-func (r *Renderer) sinceLastRender() time.Duration {
-	return time.Since(r.lastRender)
+	r.componentRendered[index] = enable
 }
