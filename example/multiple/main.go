@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ecoshub/termium/component/config"
 	"github.com/ecoshub/termium/component/palette"
@@ -94,6 +95,19 @@ func main() {
 			s.CommandPalette.AddToHistory(input)
 		}
 	})
+
+	go func() {
+		i := uint64(0)
+		t := time.NewTicker(time.Millisecond)
+		for range t.C {
+			input := fmt.Sprintf("%d", i)
+			sp.Push(input)
+			sp1.Push(input)
+			sp2.Push(input)
+			sp3.Push(input)
+			i++
+		}
+	}()
 
 	s.Start()
 }

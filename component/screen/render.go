@@ -1,6 +1,8 @@
 package screen
 
 import (
+	"time"
+
 	"github.com/ecoshub/termium/component/style"
 	"github.com/ecoshub/termium/utils"
 	"github.com/ecoshub/termium/utils/ansi"
@@ -25,6 +27,13 @@ func (s *Screen) Start() {
 }
 
 func (r *Renderer) Render() {
+	if r.maxRenderTimeGap != 0 {
+		if r.sinceLastRender() < r.maxRenderTimeGap {
+			return
+		}
+		defer r.setLastRender()
+	}
+
 	print(ansi.MakeCursorInvisible)
 
 	r.Lock()
@@ -69,26 +78,35 @@ func (r *Renderer) readComponents() {
 func (r *Renderer) readComponent(index int) {
 	c := r.components[index]
 
+	if r.componentRendered[index] {
+		return
+	}
+
+	defer func() { r.componentRendered[index] = true }()
+
 	buffer := c.renderable.Buffer()
 	panelConfig := c.renderable.Configuration()
 
 	offset := 0
 	// render the title
 	if panelConfig.RenderTitle {
-		// go to title position and clear
-		ansi.GotoRowAndColumn(c.posY+1, c.posX)
-		blank := utils.FixedSizeLine("", panelConfig.Width)
-		print(string(blank))
+		if !r.componentTitleRenderer[index] {
+			// go to title position and clear
+			ansi.GotoRowAndColumn(c.posY+1, c.posX)
+			blank := utils.FixedSizeLine("", panelConfig.Width)
+			print(string(blank))
 
-		// go to title position again to write title
-		ansi.GotoRowAndColumn(c.posY+1, c.posX)
-		line := ansi.ClearLine(panelConfig.Title, panelConfig.Width)
-		missingChars := panelConfig.Width - len(line)
-		for i := 0; i < missingChars; i++ {
-			line += " "
+			// go to title position again to write title
+			ansi.GotoRowAndColumn(c.posY+1, c.posX)
+			line := ansi.ClearLine(panelConfig.Title, panelConfig.Width)
+			missingChars := panelConfig.Width - len(line)
+			for i := 0; i < missingChars; i++ {
+				line += " "
+			}
+			line = style.SetStyle(line, panelConfig.TitleStyle)
+			print(line)
+			r.componentTitleRenderer[index] = true
 		}
-		line = style.SetStyle(line, panelConfig.TitleStyle)
-		print(line)
 		offset = 1
 	}
 
@@ -128,4 +146,12 @@ func (r *Renderer) RenderCommandPalette() {
 	ansi.GotoRowAndColumn(r.terminalHeight, len(r.commandPalette.Config.Prompt)+r.commandPalette.PromptLine.GetCursorIndex()+1)
 	r.commandPalette.PromptLine.Rendered()
 
+}
+
+func (r *Renderer) setLastRender() {
+	r.lastRender = time.Now()
+}
+
+func (r *Renderer) sinceLastRender() time.Duration {
+	return time.Since(r.lastRender)
 }

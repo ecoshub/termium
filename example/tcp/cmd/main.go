@@ -18,6 +18,7 @@ func main() {
 
 	// create a screen. this is representation of terminal screen
 	s, err := screen.New(&screen.Config{
+		FPSLimit: 1000,
 		CommandPaletteConfig: &palette.Config{
 			Prompt: "prompt# ",
 			Style: &style.Style{

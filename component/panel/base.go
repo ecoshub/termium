@@ -53,7 +53,7 @@ func (bp *Base) Write(index int, input string, optionalStyle ...*style.Style) er
 	}
 	bp.lines[index] = &line.Line{Line: input, Style: sty}
 	bp.clearLine(index)
-	bp.hasChanged()
+	bp.changedEvent()
 	return nil
 }
 
@@ -65,7 +65,7 @@ func (bp *Base) WriteMulti(lines []string) error {
 		bp.lines[i] = &line.Line{Line: lines[i], Style: &style.Style{}}
 	}
 	bp.clearAllLines()
-	bp.hasChanged()
+	bp.changedEvent()
 	return nil
 }
 
@@ -77,14 +77,14 @@ func (bp *Base) WriteMultiStyle(lines []string, sty *style.Style) error {
 		bp.lines[i] = &line.Line{Line: lines[i], Style: sty}
 	}
 	bp.clearAllLines()
-	bp.hasChanged()
+	bp.changedEvent()
 	return nil
 }
 
 func (bp *Base) Clear() {
 	bp.lines = line.NewLines(bp.Config.Height, bp.Config.ContentStyle)
 	bp.clearAllLines()
-	bp.hasChanged()
+	bp.changedEvent()
 }
 
 func (bp *Base) ClearLine(index int) {
@@ -116,4 +116,11 @@ func (bp *Base) clearLine(index int) {
 	line := bp.lines[index]
 	line.Line = ansi.Strip(line.Line)
 	bp.lines[index] = line
+}
+
+func (bp *Base) changedEvent() {
+	if bp.hasChanged == nil {
+		return
+	}
+	bp.hasChanged()
 }

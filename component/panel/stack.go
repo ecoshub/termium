@@ -43,7 +43,7 @@ func (sp *Stack) Push(input string, optionalStyle ...*style.Style) {
 	}
 	sp.content = append(sp.content, input)
 	sp.clearAllLines()
-	sp.hasChanged()
+	sp.changedEvent()
 }
 
 func (sp *Stack) Flush() {
@@ -68,10 +68,4 @@ func (sp *Stack) Dump(path string) (int, error) {
 		return 0, err
 	}
 	return n, nil
-}
-
-func (sp *Stack) Clear() {
-	sp.Base.Clear()
-	sp.index = 0
-	sp.clearAllLines()
 }

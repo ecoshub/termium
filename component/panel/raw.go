@@ -57,7 +57,7 @@ func (raw *Raw) Write(index int, input rune, optionalStyle ...*style.Style) erro
 	buffer[column] = input
 	raw.lines[row] = &line.Line{Line: string(buffer), Style: sty}
 	raw.cleanLine(row)
-	raw.hasChanged()
+	raw.changedEvent()
 	return nil
 }
 
@@ -75,7 +75,7 @@ func (raw *Raw) ListenChangeHandler(f func()) {
 func (raw *Raw) Clear() {
 	raw.lines = line.NewLines(raw.Config.Height, raw.Config.ContentStyle)
 	raw.cleanAllLines()
-	raw.hasChanged()
+	raw.changedEvent()
 }
 
 func (raw *Raw) ClearLine(index int) {

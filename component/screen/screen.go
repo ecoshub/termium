@@ -2,6 +2,7 @@ package screen
 
 import (
 	"sync"
+	"time"
 
 	"github.com/ecoshub/termium/component/palette"
 	"github.com/ecoshub/termium/component/style"
@@ -10,18 +11,27 @@ import (
 	"github.com/eiannone/keyboard"
 )
 
+const (
+	DefaultFPSLimit int = 60
+)
+
 type Config struct {
 	DisableCommentPallet bool
 	CommandPaletteConfig *palette.Config
+	FPSLimit             int
 }
 
 type Renderer struct {
 	sync.Mutex
-	terminalWidth       int
-	terminalHeight      int
-	components          []*Component
-	commandPalette      *palette.Palette
-	renderCommandPallet bool
+	terminalWidth          int
+	terminalHeight         int
+	components             []*Component
+	componentRendered      map[int]bool
+	componentTitleRenderer map[int]bool
+	commandPalette         *palette.Palette
+	renderCommandPallet    bool
+	lastRender             time.Time
+	maxRenderTimeGap       time.Duration
 }
 
 type Screen struct {
@@ -53,11 +63,14 @@ func New(optionalConfig ...*Config) (*Screen, error) {
 		TerminalWidth:  width,
 		TerminalHeight: height,
 		renderer: &Renderer{
-			terminalWidth:       width,
-			terminalHeight:      height,
-			components:          make([]*Component, 0, 2),
-			commandPalette:      cp,
-			renderCommandPallet: !cfg.DisableCommentPallet,
+			terminalWidth:          width,
+			terminalHeight:         height,
+			components:             make([]*Component, 0, 2),
+			commandPalette:         cp,
+			renderCommandPallet:    !cfg.DisableCommentPallet,
+			maxRenderTimeGap:       time.Second / time.Duration(cfg.FPSLimit),
+			componentRendered:      make(map[int]bool),
+			componentTitleRenderer: make(map[int]bool),
 		},
 	}
 	s.CommandPalette.AttachKeyEventHandler(func(event keyboard.KeyEvent) { s.renderer.RenderCommandPalette() })
@@ -84,6 +97,9 @@ func resolveConfig(optionalConfig []*Config) (*Config, error) {
 	}
 	if selectedConfig.CommandPaletteConfig.Style == nil {
 		selectedConfig.CommandPaletteConfig.Style = &style.Style{}
+	}
+	if selectedConfig.FPSLimit == 0 {
+		selectedConfig.FPSLimit = DefaultFPSLimit
 	}
 	return selectedConfig, nil
 }
