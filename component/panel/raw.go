@@ -2,6 +2,7 @@ package panel
 
 import (
 	"fmt"
+	"unicode"
 
 	"github.com/ecoshub/termium/component/config"
 	"github.com/ecoshub/termium/component/line"
@@ -19,6 +20,7 @@ const (
 type Raw struct {
 	*Base
 	defaultChar rune
+	index       int
 }
 
 func NewRawPanel(conf *config.Config) *Raw {
@@ -59,6 +61,19 @@ func (raw *Raw) Write(index int, input rune, optionalStyle ...*style.Style) erro
 	raw.cleanLine(row)
 	raw.changedEvent()
 	return nil
+}
+
+func (raw *Raw) Put(input rune, optionalStyle ...*style.Style) error {
+	// Carriage Return (CR)
+	if input == 13 {
+		raw.index += raw.Config.Width - raw.index%(raw.Config.Width)
+		return nil
+	}
+	if !unicode.IsGraphic(input) {
+		return nil
+	}
+	defer func() { raw.index++ }()
+	return raw.Write(raw.index, input, optionalStyle...)
 }
 
 func (r *Raw) Configuration() *config.Config {
