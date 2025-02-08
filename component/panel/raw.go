@@ -91,6 +91,7 @@ func (raw *Raw) Clear() {
 	raw.lines = line.NewLines(raw.Config.Height, raw.Config.ContentStyle)
 	raw.cleanAllLines()
 	raw.changedEvent()
+	raw.index = 0
 }
 
 func (raw *Raw) ClearLine(index int) {
