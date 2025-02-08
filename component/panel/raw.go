@@ -21,6 +21,7 @@ type Raw struct {
 	*Base
 	defaultChar rune
 	index       int
+	row         int
 }
 
 func NewRawPanel(conf *config.Config) *Raw {
@@ -50,6 +51,14 @@ func (raw *Raw) Write(index int, input rune, optionalStyle ...*style.Style) erro
 	}
 	row := index / raw.Config.Width
 	column := index - row*raw.Config.Width
+	if row == raw.Config.Height {
+		raw.lines = raw.lines[1:]
+		buffer := makeEmptyByteLine(raw.Config.Width, raw.defaultChar)
+		l := &line.Line{Line: string(buffer), Style: sty}
+		raw.lines = append(raw.lines, l)
+		raw.index -= raw.Config.Width
+		return raw.Write(raw.index, input, optionalStyle...)
+	}
 	if row >= (raw.Config.Height) {
 		return fmt.Errorf("index out of range. index: %d, size: %d", index, raw.Config.Height)
 	}
