@@ -21,7 +21,6 @@ type Raw struct {
 	*Base
 	defaultChar rune
 	index       int
-	row         int
 }
 
 func NewRawPanel(conf *config.Config) *Raw {
@@ -51,7 +50,7 @@ func (raw *Raw) Write(index int, input rune, optionalStyle ...*style.Style) erro
 	}
 	row := index / raw.Config.Width
 	column := index - row*raw.Config.Width
-	if row == raw.Config.Height {
+	if row >= raw.Config.Height {
 		raw.lines = raw.lines[1:]
 		buffer := makeEmptyByteLine(raw.Config.Width, raw.defaultChar)
 		l := &line.Line{Line: string(buffer), Style: sty}
