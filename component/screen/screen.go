@@ -113,6 +113,7 @@ func resolveConfig(optionalConfig []*Config) (*Config, error) {
 				Prompt: DefaultCommandPalettePrompt,
 				Style:  &style.Style{},
 			},
+			FPSLimit: DefaultFPSLimit,
 		}, nil
 	}
 	// validate and modify selected config (first config)
