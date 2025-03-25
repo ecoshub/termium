@@ -68,12 +68,18 @@ func main() {
 		return
 	}
 
+	width, height, err := utils.GetTerminalSize()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// create a panel
 	p := panel.NewStackPanel(&config.Config{
-        // full terminal width
-		Width:  utils.TerminalWith,
-        // full terminal height minus command line height (1)
-		Height: utils.TerminalHeight - 1,
+		// full terminal width
+		Width: width,
+		// full terminal height minus command line height (1)
+		Height: height - 1,
 	})
 
 	// lets add this panel to top left corner (0,0)
@@ -85,8 +91,10 @@ func main() {
 		p.Push(input)
 	})
 
-    // its starting the screen and blocking the main thread
+	// its starting the screen and blocking the main thread
 	s.Start()
+}
+
 }
 ```
 
