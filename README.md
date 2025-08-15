@@ -94,8 +94,6 @@ func main() {
 	// its starting the screen and blocking the main thread
 	s.Start()
 }
-
-}
 ```
 
 
