@@ -47,6 +47,7 @@ func (sp *Stack) Push(input string, optionalStyle ...*style.Style) {
 }
 
 func (sp *Stack) Flush() {
+	sp.Clear()
 	sp.content = make([]string, 0, 16)
 	sp.index = 0
 }
