@@ -48,6 +48,7 @@ func (sp *Stack) Push(input string, optionalStyle ...*style.Style) {
 
 func (sp *Stack) Flush() {
 	sp.content = make([]string, 0, 16)
+	sp.index = 0
 }
 
 func (sp *Stack) Dump(path string) (int, error) {
