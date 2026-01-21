@@ -17,8 +17,9 @@ const (
 
 func (p *Palette) keyPressHandlerEnter() {
 	cmd := p.PromptLine.String()
-	if cmd == "" {
+	if cmd == "" && !p.Config.AllowEnterNullString {
 		// enter key press event can only sent if input is not null
+		// and null string not allowed
 		return
 	}
 	p.PromptLine.Clear()
