@@ -15,6 +15,8 @@ type Config struct {
 	Style *style.Style
 	// triggers os.Exit() if set true when pressed
 	PressEscapeToExit bool
+	// key press enter can send null string
+	AllowEnterNullString bool
 }
 
 type Palette struct {
